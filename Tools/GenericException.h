@@ -3,6 +3,7 @@
 #if !defined(_GENERICEXCEPTION_H_)
 #define _GENERICEXCEPTION_H_
 
+#include <stdarg.h>
 #include <ToolsConfig.h>
 #ifdef USE_STD_EXCEPTION
 #include <exception>

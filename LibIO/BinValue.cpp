@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <math.h> // MSVisC has HUGE_VAL in here?!
+#include <limits.h>
 #include <MemoryBuffer.h>
 #include "ArchiveException.h"
 #include "BinValue.h"

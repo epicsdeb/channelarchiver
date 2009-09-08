@@ -1,4 +1,6 @@
 
+#include <stdlib.h>
+
 #include "ArchiveException.h"
 #include "UnitTest.h"
 
