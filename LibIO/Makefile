@@ -1,7 +1,7 @@
 # EPICS R3.14 Makefile for the old LibIO library
-TOP=../../..
+TOP=./..
 include $(TOP)/configure/CONFIG
-include $(TOP)/src/ChannelArchiver/make.cfg
+include $(TOP)/make.cfg
 
 # None of the includes get installed
 # because this library is deprecated.

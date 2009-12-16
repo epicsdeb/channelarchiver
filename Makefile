@@ -1,6 +1,6 @@
 # EPICS R3.14 Makefile for the Channel Archiver
 
-TOP=../..
+TOP=.
 include $(TOP)/configure/CONFIG
 
 DIRS += Tools

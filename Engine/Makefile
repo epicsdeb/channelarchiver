@@ -1,7 +1,7 @@
 # EPICS R3.14 Makefile for the Engine
-TOP=../../..
+TOP=./..
 include $(TOP)/configure/CONFIG
-include $(TOP)/src/ChannelArchiver/make.cfg
+include $(TOP)/make.cfg
 
 # DEBUGCMD = purify
 

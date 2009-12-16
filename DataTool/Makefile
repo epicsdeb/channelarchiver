@@ -1,7 +1,7 @@
 # EPICS R3.14 Makefile for the Data Tool
-TOP=../../..
+TOP=./..
 include $(TOP)/configure/CONFIG
-include $(TOP)/src/ChannelArchiver/make.cfg
+include $(TOP)/make.cfg
 
 USR_CXXFLAGS += -I ../../Storage 
 

@@ -1,7 +1,7 @@
 # EPICS R3.14 Makefile for the XML-RPC Data Server
-TOP=../../..
+TOP=./..
 include $(TOP)/configure/CONFIG
-include $(TOP)/src/ChannelArchiver/make.cfg
+include $(TOP)/make.cfg
 
 # Script to install
 SCRIPTS_HOST += ArchiveDataClient.pl
