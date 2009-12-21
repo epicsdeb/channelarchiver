@@ -57,12 +57,10 @@ LIBRARY_HOST := Storage
 # Tools to build but not install
 TESTPROD_HOST += FileAllocatorTool
 #TESTPROD_HOST += ReadTest
-PROD_LIBS_DEFAULT := Storage    Tools    $(EPICS_BASE_IOC_LIBS)
-PROD_LIBS_WIN32   := StorageObj ToolsObj $(EPICS_BASE_IOC_LIBS)
-Storage_DIR    = $(INSTALL_LIB)
-StorageObj_DIR = $(INSTALL_LIB)
-Tools_DIR      = $(INSTALL_LIB)
-ToolsObj_DIR   = $(INSTALL_LIB)
+PROD_LIBS_DEFAULT := Storage    Tools    Com ca
+PROD_LIBS_WIN32   := StorageObj ToolsObj Com ca
+
+PROD_SYS_LIBS += xerces-c
 
 # UnitTest Pre-RULES:
 #

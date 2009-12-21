@@ -20,15 +20,11 @@ DummyDataServer_SRCS   += DummyServer.cpp
 ArchiveDataServer_SRCS += ServerConfig.cpp ArchiveDataServer.cpp main_cgi.cpp
 ArchiveDataServerStandalone_SRCS += ServerConfig.cpp ArchiveDataServer.cpp main_standalone.cpp
 
-PROD_LIBS_DEFAULT  := DataServer    Storage    Tools    $(EPICS_BASE_IOC_LIBS)
-PROD_LIBS_WIN32    := DataServerObj StorageObj ToolsObj $(EPICS_BASE_IOC_LIBS)
+PROD_LIBS_DEFAULT  := DataServer    Storage    Tools    Com ca
+PROD_LIBS_WIN32    := DataServerObj StorageObj ToolsObj Com ca
 SYS_PROD_LIBS_WIN32 = ws2_32 advapi32 user32
-DataServer_DIR    = $(INSTALL_LIB)
-DataServerObj_DIR = $(INSTALL_LIB)
-Storage_DIR       = $(INSTALL_LIB)
-StorageObj_DIR    = $(INSTALL_LIB)
-Tools_DIR         = $(INSTALL_LIB)
-ToolsObj_DIR      = $(INSTALL_LIB)
+
+PROD_SYS_LIBS += xerces-c
 
 # NOTE slight problem here.
 # We use xmlrpc-c-config to query what's needed,

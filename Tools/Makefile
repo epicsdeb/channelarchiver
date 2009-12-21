@@ -64,13 +64,15 @@ LIB_SRCS += FUX.cpp
 LIB_SRCS_WIN32 := gnu_regex.c
 LIBRARY_HOST := Tools
 # In case of shared lib, link these:
-Tools_LIBS += $(EPICS_BASE_IOC_LIBS)
+Tools_LIBS += Com ca
 
 # Build locally w/o installation
-PROD_LIBS_DEFAULT := Tools    $(EPICS_BASE_IOC_LIBS)
-PROD_LIBS_WIN32   := ToolsObj $(EPICS_BASE_IOC_LIBS)
+PROD_LIBS_DEFAULT := Tools    Com ca
+PROD_LIBS_WIN32   := ToolsObj Com ca
 Tools_DIR    = $(INSTALL_LIB)
 ToolsObj_DIR = $(INSTALL_LIB)
+
+PROD_SYS_LIBS += xerces-c
 
 # UnitTest Pre-RULES:
 #

@@ -31,15 +31,11 @@ LIBRARY_HOST := Engine
 
 ArchiveEngine_SRCS += main.cpp
 PROD_HOST := ArchiveEngine
-PROD_LIBS_DEFAULT := Engine Storage Tools    $(EPICS_BASE_IOC_LIBS)
-#PROD_LIBS_WIN32   := EngineObj StorageObj ToolsObj $(EPICS_BASE_IOC_LIBS)
+PROD_LIBS_DEFAULT := Engine Storage Tools    Com ca
+#PROD_LIBS_WIN32   := EngineObj StorageObj ToolsObj Com ca
 #SYS_PROD_LIBS_WIN32 = ws2_32 advapi32 user32
-Engine_DIR     = $(INSTALL_LIB)
-#EngineObj_DIR  = $(INSTALL_LIB)
-Storage_DIR    = $(INSTALL_LIB)
-#StorageObj_DIR = $(INSTALL_LIB)
-Tools_DIR      = $(INSTALL_LIB)
-#ToolsObj_DIR   = $(INSTALL_LIB)
+
+PROD_SYS_LIBS += xerces-c
 
 # Only for benchmarking the read/write routines
 # or other CA tests
