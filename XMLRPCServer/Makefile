@@ -15,7 +15,7 @@ LIBRARY_HOST := DataServer
 
 # Products, but not installed (need to copy into CGI-bin)
 TESTPROD_HOST := DummyDataServer ArchiveDataServer ArchiveDataClientTest
-PROD_HOST := ArchiveDataServerStandalone
+PROD_HOST := ArchiveDataServer
 DummyDataServer_SRCS   += DummyServer.cpp
 ArchiveDataServer_SRCS += ServerConfig.cpp ArchiveDataServer.cpp main_cgi.cpp
 ArchiveDataServerStandalone_SRCS += ServerConfig.cpp ArchiveDataServer.cpp main_standalone.cpp
