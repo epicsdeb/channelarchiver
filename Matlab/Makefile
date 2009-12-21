@@ -1,3 +1,6 @@
+
+EPICS_BASE = /usr/epics/base
+
 all:    octave matlab
 
 OUT=O.$(EPICS_HOST_ARCH)
@@ -18,16 +21,14 @@ matlab: $(OUT) $(OUT)/ArchiveData.mexglx
 # FLAGS = -v
 # Includes -------------------------------------------
 # Archiver
-FLAGS += -I../../../include
+FLAGS += -I../include
 # EPICS Base
-FLAGS += -I$(EPICS_BASE_RELEASE)/include
-FLAGS += -I$(EPICS_BASE_RELEASE)/include/os/$(HOST_ARCH)
-# xml-rpc
-FLAGS += -I/usr/local/include
+FLAGS += -I$(EPICS_BASE)/include
+FLAGS += -I$(EPICS_BASE)/include/os/$(HOST_ARCH)
 # Libraries ------------------------------------------
-FLAGS += -L../../../lib/$(EPICS_HOST_ARCH) -lDataServer -lStorage -lTools 
+FLAGS += -L../lib/$(EPICS_HOST_ARCH) -lDataServer -lStorage -lTools 
 # EPICS Base
-FLAGS += -L$(EPICS_BASE_RELEASE)/lib/$(EPICS_HOST_ARCH) -ldbStaticHost -lCom -lca
+FLAGS += -L$(EPICS_BASE)/lib/$(EPICS_HOST_ARCH) -ldbStaticHost -lCom -lca
 # XML-RPC library
 # TODO: This is not portable to Win32
 FLAGS += `xmlrpc-c-config libwww-client --libs  | sed -e 's/-Wl,--rpath.*//'`

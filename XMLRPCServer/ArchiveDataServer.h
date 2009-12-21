@@ -9,7 +9,9 @@
 // Storage
 #include <Index.h>
 // XMPRPCServer
-#include "ServerConfig.h"
+#ifndef CLIENTONLY
+#  include "ServerConfig.h"
+#endif
 
 /// \defgroup DataServer
 /// Code related to the network data server
@@ -52,6 +54,7 @@ void epicsTime2pieces(const epicsTime &t,
 // Inverse to epicsTime2pieces
 void pieces2epicsTime(xmlrpc_int32 secs, xmlrpc_int32 nano, epicsTime &t);
 
+#ifndef CLIENTONLY
 // NOTE: User of the ArchiverDataServer.cpp code must provide
 // implementations of these routines!
 // ---------------------------------------------
@@ -60,6 +63,7 @@ bool get_config(xmlrpc_env *env, ServerConfig &config);
 // Return open index for given key or 0
 Index *open_index(xmlrpc_env *env, int key);
 // ---------------------------------------------
+#endif // CLIENTONLY
 
 // { int32  ver, string desc } = archiver.info()
 xmlrpc_value *get_info(xmlrpc_env *env, xmlrpc_value *args, void *user);

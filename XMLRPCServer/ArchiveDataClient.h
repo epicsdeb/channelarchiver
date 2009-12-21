@@ -10,7 +10,9 @@
 #include <CtrlInfo.h>
 #include <RawValue.h>
 // Local
+#define CLIENTONLY
 #include "ArchiveDataServer.h"
+#undef CLIENTONLY
 
 /// \ingroup DataServer
 /// Interface class to the Archiver's network data server.
