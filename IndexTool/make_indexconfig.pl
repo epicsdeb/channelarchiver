@@ -26,7 +26,7 @@ if (!getopts('d:')  ||  $#ARGV < 0)
     usage();
 }
 
-$opt_d = "http://localhost/indexconfig.dtd" unless (length($opt_d) > 0);
+$opt_d = "-//EPICS//Archiver Indexer Configuration 1.0//EN" unless (length($opt_d) > 0);
 print "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n";
 print "<!DOCTYPE indexconfig SYSTEM \"$opt_d\">\n";
 print "<indexconfig>\n";
