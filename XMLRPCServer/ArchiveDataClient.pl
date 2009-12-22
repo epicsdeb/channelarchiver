@@ -1,22 +1,87 @@
 #!/usr/bin/perl
-#
-# Perl script for testing the Archiver's XML-RPC data server.
-#
-# Every once in a while, this script will report an error ala
-#
-# "not well-formed (invalid token) at line 21, column 2, byte 626
-#  at /usr/lib/perl5/vendor_perl/...
-#     ...5.8.0/i386-linux-thread-multi/XML/Parser.pm line 185"
-#
-# for the archiver.info call.
-# A separate test with a shell script that directly sends the
-# XML-RPC request to the ArchiveDataServer via stdin and compares
-# the output with a known good output couldn't find any discrepancies.
-#
-# So the problem might be in the web server(unlikely) or
-# the Frontier::Client, XML/Parter.pm, ...
-#
-# kasemir@lanl.gov
+
+=pod
+
+=head1 NAME
+
+ArchiveDataClient - script for testing the Archiver's XML-RPC data server.
+
+=head1 SYNOPSIS
+
+ArchiveDataClient [options] { channel names }
+
+=head1 DESCRIPTION
+
+The simple DataServer client requests data from a specific time range
+for the given set of Channels and prints it to the screen.
+
+=head1 OPTIONS
+
+=over
+
+=item B<-v>
+
+Be verbose
+
+=item B<-u> I<URL>
+
+Set the URL of the DataServer
+
+=item B<-i>
+
+Show server info
+
+=item B<-a>
+
+List archives (name, key, path)
+
+=item B<-k> I<key>
+
+Specify archive key.
+
+=item B<-l>
+
+List channels
+
+=item B<-m> I<pattern>
+
+... that match a patten
+
+=item B<-h> I<how>
+
+'how' number; retrieval method
+
+=item B<-s> I<time>
+
+Start time MM/DD/YYYY HH:MM:SS.NNNNNNNNN
+
+=item B<-e> I<time>
+
+End time MM/DD/YYYY HH:MM:SS.NNNNNNNNN
+
+=item B<-c> I<count>
+
+Count
+
+=back
+
+=head1 BUGS
+
+Every once in a while, this script will report an error ala
+
+"not well-formed (invalid token) at line 21, column 2, byte 626
+ at /usr/lib/perl5/vendor_perl/...
+    ...5.8.0/i386-linux-thread-multi/XML/Parser.pm line 185"
+
+for the archiver.info call.
+A separate test with a shell script that directly sends the
+XML-RPC request to the ArchiveDataServer via stdin and compares
+the output with a known good output couldn't find any discrepancies.
+
+So the problem might be in the web server(unlikely) or
+the Frontier::Client, XML/Parter.pm, ...
+
+=cut
 
 use English;
 use Time::Local;
@@ -296,3 +361,10 @@ else
 }
 
 
+=pod
+
+=head1 AUTHOR
+
+kasemir@lanl.gov
+
+=cut

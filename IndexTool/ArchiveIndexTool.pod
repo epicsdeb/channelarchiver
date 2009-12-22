@@ -1,0 +1,50 @@
+
+=pod
+
+=head1 NAME
+
+ArchiveIndexTool - Create a master index over several otherwise seperate archives.
+
+=head1 SYNOPSIS
+
+ArchiveIndexTool [Options] <archive list file/old index> <output index>
+
+=head1 DESCRIPTION
+
+The ArchiveIndexTool is used to create Master Indices by combining multiple
+indices into a new one.  The archive list ﬁle lists all the sub archives,
+that is the paths to each sub-archive’s index ﬁle.
+
+Use L<ArchiveIndexMakeConfig(1)> to generate the archive list file.
+
+=head1 OPTIONS
+
+=over
+
+=item B<-help>
+
+Show Help
+
+=item B<-M> I<3-100>
+
+RTree M value
+
+=item B<-reindex>
+
+Build new index from old index (no list file)
+
+=item B<-verbose> I<level>
+
+Show more info
+
+=back
+
+=head1 SEE ALSO
+
+L<ArchiveIndexMakeConfig(1)>
+
+=head1 AUTHOR
+
+kasemir@lanl.gov
+
+=cut

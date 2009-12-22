@@ -1,0 +1,60 @@
+
+=pod
+
+=head1 NAME
+
+ArchiveEngine - The Channel Archiver's data collection engine
+
+=head1 SYNOPSIS
+
+ArchiveEngine [Options] <config-file> <index-file>
+
+=head1 DESCRIPTION
+
+The ArchiveEngine is an EPICS ChannelAccess client. It can save any channel
+served by any ChannelAccess server. One ArchiveEngine can archive data
+from more than one CA server.  The ArchiveEngine is configured with an XML
+file that lists what channels to archive and how. Each given channel can
+have a different periodic scan rate or be archived in monitor mode
+(on change). One design target was: Archive 10000 values per second, be it
+1000 channels that change at 10Hz each or 10000 channels which change at
+1Hz.
+
+The ArchiveEngine saves the full information available via ChannelAccess:
+The value, time stamp and status as well as control information like units, dis-
+play and alarm limits, ... The data is written to an archive in the form of local
+disk files, specifically index and data files.  While running, status and
+configuration of the ArchiveEngine are accessible via a built-in web server,
+accessible via any web browser on the network.
+
+=head1 OPTIONS
+
+=over
+
+=item B<-port> I<port>
+
+WWW server's TCP port (default 4812)
+
+=item B<-description> I<text>
+
+description for HTTP display
+
+=item B<-log> I<filename>
+
+write logfile
+
+=item B<-nocfg>
+
+disable online configuration
+
+=item B<-basename> I<string>
+
+Basename for new data files
+
+=back
+
+=head1 AUTHOR
+
+kasemir@lanl.gov
+
+=cut

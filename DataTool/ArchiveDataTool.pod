@@ -1,0 +1,108 @@
+
+=pod
+
+=head1 NAME
+
+ArchiveDataTool - A utility to manipulate Channel Archiver data files
+
+=head1 SYNOPSIS
+
+ArchiveDataTool [Options] <index-file>
+
+=head1 DESCRIPTION
+
+The ArchiveDataTool allows investigation of data ﬁles as well as conversion
+from old directory-ﬁle based archives into ones that utilize an index ﬁle. It also
+allows some basic data management.
+
+=head1 OPTIONS
+
+=over
+
+=item B<-help>
+
+Show help
+
+=item B<-verbose> I<level>
+
+Show more info
+
+=item B<-info>
+
+Simple archive info
+
+=item B<-list>
+
+List channel name info
+
+=item B<-copy> I<new index>
+
+Copy channels
+
+=item B<-start> I<time>
+
+Format: "mm/dd/yyyy[ hh:mm:ss[.nano-secs]]"
+
+=item B<-end> I<time>
+
+(exclusive)
+
+=item B<-file_limit> I<MB>
+
+File Size Limit
+
+=item B<-basename> I<string>
+
+Basename for new data files
+
+=item B<-append_off>
+
+Enforce a final 'Archive_Off' value when copying data
+
+=item B<-dir2index> I<dir. file>
+
+Convert old directory file to index
+
+=item B<-index2dir> I<dir. file>
+
+Convert index to old directory file
+
+=item B<-M> I<1-100>
+
+RTree M value
+
+=item B<-blocks>
+
+List channel's data blocks
+
+=item B<-Blocks>
+
+List all data blocks
+
+=item B<-dotindex> I<dot filename>
+
+Dump contents of RTree index into dot file
+
+=item B<-channel> I<name>
+
+Channel name
+
+=item B<-hashinfo>
+
+Show Hash table info
+
+=item B<-seek> I<time>
+
+Perform seek test
+
+=item B<-test>
+
+Perform some consistency tests
+
+=back
+
+=head1 AUTHOR
+
+kasemir@lanl.gov
+
+=cut

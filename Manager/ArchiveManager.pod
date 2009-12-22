@@ -1,0 +1,108 @@
+
+=pod
+
+=head1 NAME
+
+ArchiveManager - A utility to manipulate old Channel Archiver data files
+
+=head1 SYNOPSIS
+
+ArchiveManager [Options] <archive index file>
+
+The ArchiveManager command line tool for managing archives that use the
+older Directory files is still available. It does not work with the new index files.
+After migrating the data to the new index format, ArchiveDataTool replaces the
+ArchiverManager. You can use the ArchiveDataTool to create index files for
+existing directory files.
+
+You should not run the this tool on a live archive
+Stop the ArchiveEngine before operating on an archive.
+Create backups in case this tool damages your archive.
+
+=head1 OPTIONS
+
+=over
+
+=item B<-info>
+
+Show archive information
+
+=item B<-test>
+
+Test archive for errors
+
+=item B<-channel> I<channel>
+
+Specify channel name
+
+=item B<-match> I<regular expression>
+
+List matching channels
+
+=item B<-Match> I<regular expression>
+
+Dump values for matching channels
+
+=item B<-start> I<time>
+
+Start time as mm/dd/yyyy hh:mm:ss[.nano-secs]
+
+=item B<-end> I<time>
+
+End time (exclusive)
+
+=item B<-xport> I<new archive>
+
+export data into new archive
+
+=item B<-repeat_limit> I<seconds>
+
+remove 'repeat' entries beyond limit (export)
+
+=item B<-Repeat_floor> I<seconds>
+
+remove 'repeat' entries below limit (list/dump/export)
+
+=item B<-FileSize> I<days>
+
+Days per binary data file (export, binary file format detail)
+
+=item B<-headers> I<channel>
+
+show headers for channel
+
+=item B<-Outpu>t I<channel>
+
+output ASCII dump for channel
+
+=item B<-Input> I<ascii file>
+
+read ASCII dump for channel into archive
+
+=item B<-Compare> I<target archive>
+
+Compare with target archive
+
+=item B<-Seek>
+
+Seek test (use with -start)
+
+=item B<-Rename> I<new name>
+
+Rename channel name, requires -c for old channel
+
+=item B<-DELETE> I<channel>
+
+Delete channel from index file
+
+=item B<-Experiment>
+
+Perform experiment (temporary option)
+
+=back
+
+=head1 AUTHOR
+
+kasemir@lanl.gov
+
+=cut

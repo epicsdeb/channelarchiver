@@ -1,0 +1,100 @@
+
+=pod
+
+=head1 NAME
+
+ArchiveExport - Utility to extract data directly from an archive file
+
+=head1 SYNOPSIS
+
+ArchiveExport [Options] <index-file>
+
+=head1 DESCRIPTION
+
+ArchiveExport is a command-line tool for local tests, i.e. it does not connect to
+the archive data server, but instead requires that you have read access to the
+index and data ﬁles. It is mostly meant for testing.
+
+=head1 OPTIONS
+
+=over
+
+=item B<-verbose>
+
+Verbose mode
+
+=item B<-match> I<reg. exp.>
+
+Channel name pattern
+
+=item B<-list>
+
+List all channels
+
+=item B<-info>
+
+Time-range info on channels
+
+=item B<-start> I<time>
+
+Format: "mm/dd/yyyy[ hh:mm:ss[.nano-secs]]"
+
+=item B<-end> I<time>
+
+(exclusive)
+
+=item B<-text>
+
+Include text column for status/severity (default)
+
+=item B<-no_text>
+
+Exclude text column for status/severity
+
+=item B<-output> I<file>
+
+Output to file
+
+=item B<-plotbin> I<seconds>
+
+Bin the raw data for plotting
+
+=item B<-average> I<seconds>
+
+average values
+
+=item B<-linear> I<seconds>
+
+Interpolate values linearly
+
+=item B<-format> I<decimal|engineering|exponential>
+
+Use specific format for numbers
+
+=item B<-precision> I<int>
+
+Precision of numbers
+
+=item B<-gnuplot>
+
+Generate GNUPlot command file
+
+=item B<-Gnuplot>
+
+Generate GNUPlot output for Image
+
+=item B<-raw_time>
+
+Include columns for EPICS time stamp
+
+=item B<-millisecs>
+
+Truncate time to millisecs in spreadsheet dump.
+
+=back
+
+=head1 AUTHOR
+
+kasemir@lanl.gov
+
+=cut

@@ -3,6 +3,30 @@
 #
 # kasemir@lanl.gov
 
+=pod
+
+=head1 NAME
+
+ArchiveIndexMakeConfig - Script to generate a config file for ArchiveIndexTool
+
+=head1 SYNOPSIS
+
+ArchiveIndexMakeConfig [-d DTD] index { index }
+
+=head1 DESCRIPTION
+
+Prints to standard out an XML configuration file suitable for ArchiveIndexTool.
+
+=head1 SEE ALSO
+
+L<ArchiveIndexTool(1)>
+
+=head1 AUTHOR
+
+kasemir@lanl.gov
+
+=cut
+
 use English;
 use strict;
 use vars qw($opt_d);
