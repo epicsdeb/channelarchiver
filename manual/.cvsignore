@@ -1,0 +1,10 @@
+
+*.toc
+*.out
+*.log
+*.ind
+*.ilg
+*.idx
+*.aux
+
+manual.brf

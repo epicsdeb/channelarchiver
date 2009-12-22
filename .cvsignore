@@ -1,0 +1,7 @@
+O.*
+*.ncb
+*.opt
+Debug
+Release
+doxy
+llrf
