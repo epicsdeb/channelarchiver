@@ -1,0 +1,12 @@
+octave-channelarchiver for Debian
+---------------------------------
+
+This package contains the compiled extension ArchiveData and several helpers:
+ml_arch_get, ml_arch_names, ml_arch_archives, ml_arch_info, and ml_arch_plot.
+
+ArchiveData uses the XMLRPC interface and requires that an instance of the
+data server be running and accessible.
+
+All function have online help.  Try 'help ArchiveData'.
+
+ -- Michael Davidsaver <mdavidsaver@bnl.gov>  Mon, 21 Dec 2009 09:58:33 -0500

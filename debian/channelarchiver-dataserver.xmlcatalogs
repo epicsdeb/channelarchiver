@@ -1,0 +1,2 @@
+local;XMLRPCServer/serverconfig.dtd;/usr/share/xml/channelarchiver/serverconfig.dtd
+root-and-package;system;-//EPICS//Archiver Data Server Configuration 1.0//EN;/usr/share/xml/channelarchiver/serverconfig.dtd

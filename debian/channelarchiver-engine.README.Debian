@@ -1,0 +1,16 @@
+channelarchiver-engine for Debian
+---------------------------------
+
+This package contains the ArchiveEngine and the ArchiveIndexTool.
+
+The ArchiveEngine is the Channel Access client program which
+constantly collects data from many PVs.
+
+= Configuration files =
+
+All engine configurations files should use
+'-//EPICS//Archiver Engine Configuration 1.0//EN' as the XML FPI while
+index tool configurations should use
+'-//EPICS//Archiver Indexer Configuration 1.0//EN'.
+
+ -- Michael Davidsaver <mdavidsaver@bnl.gov>  Mon, 21 Dec 2009 09:58:33 -0500

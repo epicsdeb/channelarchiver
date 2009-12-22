@@ -1,0 +1,4 @@
+local;Engine/engineconfig.dtd;/usr/share/xml/channelarchiver/engineconfig.dtd
+root-and-package;system;-//EPICS//Archiver Engine Configuration 1.0//EN;/usr/share/xml/channelarchiver/engineconfig.dtd
+local;IndexTool/indexconfig.dtd;/usr/share/xml/channelarchiver/indexconfig.dtd
+root-and-package;system;-//EPICS//Archiver Indexer Configuration 1.0//EN;/usr/share/xml/channelarchiver/indexconfig.dtd

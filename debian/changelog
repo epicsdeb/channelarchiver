@@ -1,0 +1,8 @@
+channelarchiver (2.9.2+dfsg-1) unstable; urgency=low
+
+  * Initial release
+  * Original tarball cleaned.
+    Removed unused third party tarballs and CVS debris
+
+ -- Michael Davidsaver <mdavidsaver@bnl.gov>  Mon, 21 Dec 2009 20:25:13 -0500
+

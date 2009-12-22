@@ -1,0 +1,62 @@
+Source: channelarchiver
+Section: admin
+Priority: extra
+Maintainer: Michael Davidsaver <mdavidsaver@bnl.gov>
+Build-Depends: cdbs, debhelper (>= 7), xml-core,
+               epics-dev (>= 3.14.10-9), epics-dev (<< 3.14.11),
+               epics-extensions-dev (>= 20091204),
+               octave3.0-headers, octave-pkg-dev,
+               libxerces-c2-dev, libxmlrpc-c3-dev, libcurl3-dev,
+               perl, libfrontier-rpc-perl
+Standards-Version: 3.8.0
+Homepage: http://ics-web.sns.ornl.gov/kasemir/archiver/
+
+Package: channelarchiver-doc
+Architecture: all
+Section: doc
+Description: The EPICS data archiving engine
+ The EPICS Channel Archiver
+ .
+ This package contains to user manual
+
+Package: channelarchiver-engine
+Architecture: any
+Depends: ${shlibs:Depends}, ${perl:Depends}, ${misc:Depends},
+         epics-libs (>= 3.14.10-9), epics-libs (<< 3.14.11),
+Description: The EPICS data archiving engine
+ The EPICS Channel Archiver
+ .
+ This package contains the data collection engine and
+ the engine manager
+
+Package: channelarchiver-tools
+Architecture: any
+Depends: ${shlibs:Depends}, ${perl:Depends},
+         epics-libs (>= 3.14.10-9), epics-libs (<< 3.14.11),
+Description: The EPICS data archiving engine
+ The EPICS Channel Archiver
+ .
+ This package contains some command line tools for working
+ with archived data.
+
+Package: channelarchiver-dataserver
+Section: web
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},
+         epics-libs (>= 3.14.10-9), epics-libs (<< 3.14.11),
+Recommends: apache2 | httpd
+Description: The EPICS data archiving engine
+ The EPICS Channel Archiver
+ .
+ This package contains the CGI data server
+
+Package: octave-channelarchiver
+Section: math
+Architecture: any
+Depends: ${shlibs:Depends}, ${octave:Depends},
+         epics-libs (>= 3.14.10-9), epics-libs (<< 3.14.11),
+Description: The EPICS data archiving engine
+ The EPICS Channel Archiver
+ .
+ This package contains a Octave extension to retrieve data
+ via XMLRPC calls.

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE indexconfig SYSTEM "-//EPICS//Archiver Indexer Configuration 1.0//EN">
+<indexconfig>
+	<archive>
+		<index>/var/cache/channelarchiver/default</index>
+	</archive>
+	<archive>
+		<index>/var/cache/channelarchiver/another</index>
+	</archive>
+</indexconfig>
