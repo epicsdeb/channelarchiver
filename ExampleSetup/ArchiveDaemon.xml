@@ -2,12 +2,14 @@
 <!DOCTYPE daemon SYSTEM "ArchiveDaemon.dtd">
 <daemon>
     <port>4900</port>
-    <mailbox>/arch/xfer</mailbox>
     <engine directory='llrf'>
         <desc>LLRF</desc>
         <port>4901</port>
         <config>llrf-group.xml</config>
-        <restart type='weekly'>We 10:20</restart>
+        <restart>
+            <period type='weekly'>We 10:20</period>
+            <action>echo Updated index</action>
+        </restart>
         <dataserver><host>web2</host></dataserver>
     </engine>
     <!-- Typically, more entries follow:

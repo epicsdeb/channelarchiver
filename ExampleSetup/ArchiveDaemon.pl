@@ -179,18 +179,18 @@ sub read_config($)
     my ($engine);
     foreach $engine ( keys %{ $config->{engine} } )
     {
-        if ($config->{engine}{$engine}{restart}{type} eq "weekly")
+        if ($config->{engine}{$engine}{restart}{period}{type} eq "weekly")
         {
-            my ($daytxt, $daily) = split(/ /, $config->{engine}{$engine}{restart}{content});
+            my ($daytxt, $daily) = split(/ /, $config->{engine}{$engine}{restart}{period}{content});
             my ($daychars) = substr($daytxt, 0, 2);
             die ("Engine '$engine': " .
                  "Unknown day name '$daytxt' " .
                  "in weekly restart config")
             unless defined($weekdays{$daychars});        
             # Hack weekly into daily, but only for one day of the week
-            $config->{engine}{$engine}{restart}{type} = 'daily';
-            $config->{engine}{$engine}{restart}{day} = $weekdays{$daychars};
-            $config->{engine}{$engine}{restart}{content} = $daily;
+            $config->{engine}{$engine}{restart}{period}{type} = 'daily';
+            $config->{engine}{$engine}{restart}{period}{day} = $weekdays{$daychars};
+            $config->{engine}{$engine}{restart}{period}{content} = $daily;
         }            
         # Initialize the extra status stuff that's not in the config file.
         $config->{engine}{$engine}{disabled} = 0;
@@ -238,7 +238,7 @@ sub update_schedule($)
             $engine_start_secs = 0;
         }
         # Determine next_start, next_stop
-        if ($config->{engine}{$engine}{restart}{type} eq 'daily')
+        if ($config->{engine}{$engine}{restart}{period}{type} eq 'daily')
         {   
             if ($engine_start_secs <= 0)
             {   # Not Running: Start as soon as possible
@@ -248,12 +248,12 @@ sub update_schedule($)
             else
             {   # Running: Determine stop time
                 ($hour, $minute) = split ':',
-                            $config->{engine}{$engine}{restart}{content};
+                            $config->{engine}{$engine}{restart}{period}{content};
                 $config->{engine}{$engine}{next_start} = 0;
-                if (defined($config->{engine}{$engine}{restart}{day}))
+                if (defined($config->{engine}{$engine}{restart}{period}{day}))
                 {   # Target: $engine->{day}; Today's daynum: $n_wday
                     my ($days_to_go) =
-                    $config->{engine}{$engine}{restart}{day} - $n_wday;
+                    $config->{engine}{$engine}{restart}{period}{day} - $n_wday;
                     $days_to_go += 7 if ($days_to_go < 0);
                     $config->{engine}{$engine}{next_stop} =
                     timelocal_nocheck(0, $minute,$hour,
@@ -273,7 +273,7 @@ sub update_schedule($)
                 }
             }
         }
-        elsif ($config->{engine}{$engine}{restart}{type} eq "hourly")
+        elsif ($config->{engine}{$engine}{restart}{period}{type} eq "hourly")
         {
             if ($engine_start_secs <= 0)
             {   # Not Running: Start as soon as possible
@@ -282,16 +282,16 @@ sub update_schedule($)
             }
             else
             {   # Running: Determine stop time (relative to engine)
-                my ($rounding) = int($config->{engine}{$engine}{restart}{content} * 60*60);
+                my ($rounding) = int($config->{engine}{$engine}{restart}{period}{content} * 60*60);
                 $config->{engine}{$engine}{next_start} = 0;
                 $config->{engine}{$engine}{next_stop} =
                     (int($engine_start_secs/$rounding)+1) * $rounding;
             }
         }
-        elsif ($config->{engine}{$engine}{restart}{type} eq "timed")
+        elsif ($config->{engine}{$engine}{restart}{period}{type} eq "timed")
         {   
             ($hour, $minute, $hours, $minutes) =
-                  split '[:/]',$config->{engine}{$engine}{restart}{content};
+                  split '[:/]',$config->{engine}{$engine}{restart}{period}{content};
             # Calc start/end
             my ($start) = timelocal(0,$minute,$hour,$n_mday,$n_mon,$n_year);
             my ($stop) = $start + ($hours*60 + $minutes) * 60;
@@ -460,25 +460,25 @@ sub handle_HTTP_main($)
         }
         # Restart
         print $client "<TD ALIGN=CENTER>";
-        if ($config->{engine}{$engine}{restart}{type} eq "daily")
+        if ($config->{engine}{$engine}{restart}{period}{type} eq "daily")
         {
-            if (defined($config->{engine}{$engine}{restart}{day}))
+            if (defined($config->{engine}{$engine}{restart}{period}{day}))
             {
-                print $client "Every $weekdays[$config->{engine}{$engine}{restart}{day}] " .
-                    "at $config->{engine}{$engine}{restart}{content}.";
+                print $client "Every $weekdays[$config->{engine}{$engine}{restart}{period}{day}] " .
+                    "at $config->{engine}{$engine}{restart}{period}{content}.";
             }
             else
             {
-                print $client "Daily at $config->{engine}{$engine}{restart}{content}.";
+                print $client "Daily at $config->{engine}{$engine}{restart}{period}{content}.";
             }
         }
-        elsif ($config->{engine}{$engine}{restart}{type} eq "hourly")
+        elsif ($config->{engine}{$engine}{restart}{period}{type} eq "hourly")
         {
-            print $client "Every $config->{engine}{$engine}{restart}{content} h.";
+            print $client "Every $config->{engine}{$engine}{restart}{period}{content} h.";
         }
-        elsif ($config->{engine}{$engine}{restart}{type} eq "timed")
+        elsif ($config->{engine}{$engine}{restart}{period}{type} eq "timed")
         {
-            print $client "Start/Duration: $config->{engine}{$engine}{restart}{content}";
+            print $client "Start/Duration: $config->{engine}{$engine}{restart}{period}{content}";
         }
         else
         {
@@ -773,13 +773,13 @@ sub make_indexname($$)
     my ($now, $engine) = @ARG;
     my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)
     = localtime($now);
-    if ($config->{engine}{$engine}{restart}{type} eq "hourly")
+    if ($config->{engine}{$engine}{restart}{period}{type} eq "hourly")
     {
         return sprintf("%04d/%02d_%02d_%02dh/index",
                    1900+$year, 1+$mon, $mday, $hour);
     }
-    if ($config->{engine}{$engine}{restart}{type} eq "daily"  or
-        $config->{engine}{$engine}{restart}{type} eq "timed")
+    if ($config->{engine}{$engine}{restart}{period}{type} eq "daily"  or
+        $config->{engine}{$engine}{restart}{period}{type} eq "timed")
     {
         return sprintf("%04d/%02d_%02d/index", 1900+$year, 1+$mon, $mday);
     }
@@ -970,50 +970,27 @@ sub start_engine($$)
     system($cmd);
     # Create symlink to the new index ('2005/03_21/index')
     # from 'current index' in the engine directory.
+
     my ($current) = readlink("$engine/current_index");
-    if (defined($current) && ($current ne $index))
+    # if link exists, remove it
+    unlink("$engine/current_index") if(defined($current) && ($current ne $index));
+
+    symlink("$index", "$engine/current_index");
+    print("symlink to $index\n");
+
+    if (!defined($current) || ($current ne $index))
     {
         # Inform index mechanism about the old 'current' sub-archive
         # that's now complete, but only if that's really an older one.
         # In case the new 'current_index' matches the one found,
         # we should not yet copy/update anything.
-        if (exists($config->{engine}{$engine}{dataserver}{host}))
+        if (exists($config->{engine}{$engine}{restart}{action}))
         {
-            my ($datadir) = dirname($current);
-            my ($info);
-            if ($host =~ m/$config->{engine}{$engine}{dataserver}{host}/)
-            {   # On same host: Just information.
-                $info = "new $host:$daemon_path/$engine/$datadir";
-            }
-            else
-            {   # On remote host: need source, target info for copy.
-                $info = "copy $host:$daemon_path/$engine/$datadir "
-                . "$config->{engine}{$engine}{dataserver}{host}:$daemon_path/$engine/$datadir";
-            }
-            if (exists($config->{mailbox}))
-            {
-                my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)
-                       = localtime($now);
-                my ($info_name) = sprintf("%s/%s-%04d_%02d_%02d-%02d_%02d_%02d.txt",
-                                        $config->{mailbox}, $engine, 1900+$year, 1+$mon, $mday,
-                                        $hour, $min, $sec);
-                if (open(INFO_FILE, ">$info_name"))
-                {
-                    print INFO_FILE "$info\n";
-                    close INFO_FILE;
-                }
-                print"$info\n";
-            }
-            else
-            {
-                print"No <mailbox> for $info\n";
-            }
+            print "Action: $config->{engine}{$engine}{restart}{action}\n";
+            system($config->{engine}{$engine}{restart}{action});
         }
-        # if link exists, remove it
-        unlink("$engine/current_index");
     }
-    symlink("$index", "$engine/current_index");
-    print("symlink to $index\n");
+
     return 0;
 }
 

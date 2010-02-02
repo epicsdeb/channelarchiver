@@ -3,7 +3,6 @@
 <!ELEMENT daemon (port, mailbox?, engine*)>
 
 <!ELEMENT port   (#PCDATA)>  <!-- TCP port number    -->
-<!ELEMENT mailbox (#PCDATA)> <!-- /path              -->
 
 <!ELEMENT engine
           (desc, port, config, restart?, dataserver?)>
@@ -12,8 +11,10 @@
 <!ELEMENT desc   (#PCDATA)> <!-- Text               -->
 <!ELEMENT config (#PCDATA)> <!-- path               -->
 
-<!ELEMENT restart (#PCDATA)> <!-- path               -->
-<!ATTLIST restart
+<!ELEMENT restart (period,action?)>
+
+<!ELEMENT period (#PCDATA)>
+<!ATTLIST period
           type (weekly|daily|hourly|timed) #REQUIRED>
 <!-- weekly  Mo|Tu|...|Su HH:MM
      daily   HH:MM
@@ -21,6 +22,8 @@
      timed   HH:MM/HH:MM  
              (start/duration)
   -->
+
+<!ELEMENT action (#PCDATA)>
 
 <!ELEMENT dataserver (host?)>
 <!ELEMENT host (#PCDATA)>
