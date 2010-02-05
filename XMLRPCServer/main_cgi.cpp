@@ -19,9 +19,11 @@
 // otherwise your XML-RPC clients are likely
 // to only show "error" and you have no clue
 // what's happening.
-#define LOGFILE "/tmp/archserver.log"
+#define LOGFILE "/var/log/archserver.log"
 
 #define DUMP_CGI_INFO
+
+static const char defaultconfig[]="/var/cache/channelarchiver/dataserver.xml";
 
 // Return name of configuration file from environment or 0
 const char *get_config_name(xmlrpc_env *env)
@@ -29,9 +31,7 @@ const char *get_config_name(xmlrpc_env *env)
     const char *name = getenv("SERVERCONFIG");
     if (!name)
     {
-        xmlrpc_env_set_fault_formatted(env, ARCH_DAT_NO_INDEX,
-                                       "SERVERCONFIG is undefined");
-        return 0;
+        return defaultconfig;
     }
     return name;
 }

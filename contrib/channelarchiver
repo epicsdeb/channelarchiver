@@ -14,12 +14,16 @@
 
 CONF=/etc/channelarchiver/daemon.conf
 
+LOG=/var/log/archserver.log
+
 SCRIPTS=/usr/share/channelarchiver
 
 EXEC=/usr/bin/ArchiveDaemon
 NAME=`basename $EXEC`
 
 USER=channelarchiver
+
+WWWUSER=www-data
 
 . $CONF
 
@@ -47,6 +51,8 @@ start)
 
     touch $PID || die "Can't create $PID"
     chown $USER $PID || die "Failed to give $PID to $USER"
+    touch $LOG || die "Can't create $LOG"
+    chown $WWWUSER $LOG || die "Failed to give $LOG to $WWWUSER"
 
     start-stop-daemon --start --pidfile $PID \
         --chdir "$BASE_DIR" --startas $EXEC --name $NAME \
