@@ -1,0 +1,144 @@
+channelarchiver-engine channelarchiver-dataserver for Debian
+---------------------------------
+
+= Setting up a Archiver Collection Engine =
+
+A collection engine is a daemon process which monitors a set of channels and writes
+the results to disk.  More then one collection engine can run on a single computer.
+
+Each collection engine will have its configuration in a sub-directory of the
+main configuration directory /etc/channelarchiver.  The sub-directory 
+/etc/channelarchiver/example demonstrates a minimal configuration.  The example
+will not be run.
+
+To add a new collection engine create a new directory.  As an example I will
+choose 'myengine'.  So create /etc/channelarchiver/myengine.  In this directory
+we will create two files.
+
+/etc/channelarchiver/myengine/daemon.conf
+
+should contain the lines:
+
+----------------------------------------
+NAME="My example data collection engine
+
+RESTART_MODE=weekly
+RESTART_TIME="Mo 02:00"
+----------------------------------------
+
+NOTE: See /etc/channelarchivier/daemon.conf for the format of RESTART_*.
+
+and /etc/channelarchiver/myengine/engine.xml
+
+should contain
+
+--------------------------------------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE engineconfig SYSTEM "/usr/share/xml/channelarchiver/engineconfig.dtd">
+<engineconfig>
+        <write_period>30</write_period>
+        <get_threshold>60</get_threshold>
+        <file_size>1000</file_size>
+        <ignored_future>6</ignored_future>
+        <buffer_reserve>3</buffer_reserve>
+        <max_repeat_count>120</max_repeat_count>
+        <group>
+                <name>mychannels</name>
+                <channel>
+                   <name>ioc:channel1</name>
+                   <period>5</period><monitor/>
+                </channel>
+                <channel>
+                   <name>ioc:channel2</name>
+                   <period>0.1</period><monitor/>
+                </channel>
+                <channel>
+                   <name>ioc:channel3</name>
+                   <period>1.0</period><monitor/>
+                </channel>
+        </group>
+</engineconfig>
+--------------------------------------------------------------------------------------------
+
+This engine will collect data from three PVs: 'ioc:channel1', 'ioc:channel2',
+and 'ioc:channel3'.
+
+For more information on contents and format of engine.xml see section 3.1 of the Channel
+Archiver Manual (/usr/share/doc/channelarchiver-doc/manual/manual.pdf.gz).  This file
+is part of the 'channelarchiver-doc' package.
+
+To start all collection engines
+
+# /etc/init.d/channelarchiver start
+
+= Engine Status =
+
+The archive daemon and each collection engine run a small http server on port 4800 (see
+/etc/channelarchiver/daemon.conf) to provide status information.  Point a browser at
+'http://localhost:4800'.
+
+= Setting up a CGI Data Server =
+
+When the collection engine is run on a machine with the channelarchiver-dataserver package
+installed the file '/var/cache/channelarchiver/dataserver.xml' is generated.  The CGI
+binary (yes compiled from C++ :() ) defaults to accepting its configuration from this file.
+This can be overridden by specifying the environment variable SERVERCONFIG.
+
+By default the apache2 package creates a default vhost which export /usr/lib/cgi-bin as
+'http://localhost/cgi-bin'.  So a simple data server can be setup as follows.
+
+WARNING: By default your webserver will be exposed to the all other computers on your
+         network.  It would be a good idea to understand the implications of this before
+         proceeding.
+
+1) # apt-get install apache2
+
+2) Edit /etc/apache2/mods-available/mime.conf
+
+Uncomment the line 'AddHandler cgi-script .cgi'
+
+3) # /etc/init.d/apache2 start
+
+The channelarchiver-tools package contains a CLI client which can be used to verify
+a working configuration
+
+$ ArchiveDataClient -u 'http://localhost/cgi-bin/ArchiveDataServer.cgi' -a
+
+Note: The configuration will not be present until a data collection engine has been
+      started.
+
+= Notes on Archive Indexing =
+
+The scope of indexing determines what ranges of data are availible to clients.  Each
+index includes data for a set of channels for a range of time.  A request
+to the data server can be made for one index at a time.
+
+The indexing scheme implimented by this package will create one index per year with
+the current year divided into two indecies.  It is necessary to give special treatment
+to the index currently being written by a collection engine.
+
+For example.  By default collection engines start a new index at the beginning of each
+week on Monday morning at 2:00 am.  So the indecies availible from a data server might look like:
+
+$ date
+Fri Feb  5 12:07:25 EST 2010
+$ ArchiveDataClient -u http://localhost/cgi-bin/ArchiveDataServer.cgi -a
+Archives:
+Key 1: 'default/Current' in '/var/cache/channelarchiver/default/current_index'
+Key 2: 'default/2010' in '/var/cache/channelarchiver/default/2010/year_index'
+Key 2: 'default/2009' in '/var/cache/channelarchiver/default/2009/year_index'
+
+The range of dates stored in 'default/Current' covers Feb. 1 2:00 through Feb. 5 12:07 with
+the range Jan. 1 through Feb. 1 in the 'default/2010' index.
+
+If data from Jan 30 through Feb 3 is desired then two seperate queries must be made, one on
+the 'default/Current' index and a second on 'default/2010'.  The requester must them merge
+the two results.
+
+= Notes on using a web server other then Apache =
+
+The ArchiveDataServer.cgi should work with any web server which can execute CGI scripts.
+The only requirements is that it have read access to the archive data files (by default
+/var/cache/channelarchiver), and write access to its log (/var/log/archserver.log).
+
+ -- Michael Davidsaver <mdavidsaver@bnl.gov>  Mon, 21 Dec 2009 09:58:33 -0500
