@@ -1,1 +1,2 @@
-usr/lib/channelarchiver-dataserver/ArchiveDataServer.cgi
+usr/lib/cgi-bin/ArchiveDataServer.cgi
+usr/share/channelarchiver/genserver.sh

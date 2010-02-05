@@ -60,7 +60,19 @@ install/channelarchiver-engine::
 	install -m 755 -t debian/tmp/usr/bin bin/$(EPICS_HOST_ARCH)/ArchiveEngine
 	install -m 755 -t debian/tmp/usr/bin bin/$(EPICS_HOST_ARCH)/ArchiveManager
 	install -m 755 -t debian/tmp/usr/bin bin/$(EPICS_HOST_ARCH)/ArchiveIndexTool
+	install -m 755 ExampleSetup/ArchiveDaemon.pl debian/tmp/usr/bin/ArchiveDaemon
 	install -m 755 bin/$(EPICS_HOST_ARCH)/make_indexconfig.pl debian/tmp/usr/bin/ArchiveIndexMakeConfig
+
+	install -d debian/tmp/usr/share/channelarchiver
+	install -m 755 -t debian/tmp/usr/share/channelarchiver contrib/*.sh
+
+	install -d debian/tmp/etc/channelarchiver
+	install -d debian/tmp/etc/channelarchiver/example
+	install -m 644 -t debian/tmp/etc/channelarchiver contrib/daemon.conf
+	install -m 644 -t debian/tmp/etc/channelarchiver/example contrib/example/*
+
+	install -d debian/tmp/etc/init.d
+	install -m 755 -t debian/tmp/etc/init.d contrib/channelarchiver
 
 install/channelarchiver-tools::
 	install -d debian/tmp/usr/bin
@@ -69,9 +81,9 @@ install/channelarchiver-tools::
 	install -m 755 bin/$(EPICS_HOST_ARCH)/ArchiveDataClient.pl debian/tmp/usr/bin/ArchiveDataClient
 
 install/channelarchiver-dataserver::
-	install -d debian/tmp/usr/lib/channelarchiver-dataserver
+	install -d debian/tmp/usr/lib/cgi-bin
 	install -m 755 bin/$(EPICS_HOST_ARCH)/ArchiveDataServer \
-debian/tmp/usr/lib/channelarchiver-dataserver/ArchiveDataServer.cgi
+debian/tmp/usr/lib/cgi-bin/ArchiveDataServer.cgi
 
 install/octave-channelarchiver::
 	install -d debian/tmp$(OCTDIR)

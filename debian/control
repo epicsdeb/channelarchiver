@@ -21,7 +21,7 @@ Description: The EPICS data archiving engine
 
 Package: channelarchiver-engine
 Architecture: any
-Depends: ${shlibs:Depends}, ${perl:Depends}, ${misc:Depends},
+Depends: ${shlibs:Depends}, ${perl:Depends}, ${misc:Depends}, adduser,
 Description: The EPICS data archiving engine
  The EPICS Channel Archiver
  .
@@ -41,6 +41,7 @@ Package: channelarchiver-dataserver
 Section: web
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
+         channelarchiver-engine (= ${binary:Version}),
 Recommends: apache2 | httpd
 Description: The EPICS data archiving engine
  The EPICS Channel Archiver

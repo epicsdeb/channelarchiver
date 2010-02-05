@@ -1,3 +1,9 @@
 usr/bin/ArchiveEngine
 usr/bin/ArchiveIndexTool
 usr/bin/ArchiveIndexMakeConfig
+usr/bin/ArchiveDaemon
+usr/share/channelarchiver/gendaemon.sh
+usr/share/channelarchiver/updateindex.sh
+usr/share/channelarchiver/update.sh
+etc/channelarchiver
+etc/init.d
