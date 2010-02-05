@@ -1050,7 +1050,7 @@ sub usage()
     print("ArchiveEngines based on a config. file.\n");
     exit(-1);
 }
-if (!getopts('hf:d')  ||  $#ARGV != -1  ||  $opt_h)
+if (!getopts('hf:p:d')  ||  $#ARGV != -1  ||  $opt_h)
 {
     usage();
 }
@@ -1081,7 +1081,14 @@ if ($daemonization)
     open STDIN, "/dev/null" or die "Cannot disassociate STDIN\n";
     open STDOUT, ">$logfile" or die "Cannot create $logfile\n";
     defined(my $pid = fork) or die "Can't fork: $!";
-    exit if $pid;
+    if($pid) {
+        if($opt_p) {
+            open(PIDFILE, ">>$opt_p");
+            print PIDFILE "$pid";
+            close(PIDFILE);
+        }
+        exit(0);
+    }
     setsid                  or die "Can't start a new session: $!";
     open STDERR, '>&STDOUT' or die "Can't dup stdout: $!";
 }

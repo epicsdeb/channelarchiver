@@ -16,7 +16,8 @@ CONF=/etc/channelarchiver/daemon.conf
 
 SCRIPTS=/usr/share/channelarchiver
 
-NAME=ArchiverDaemon
+EXEC=/usr/bin/ArchiveDaemon
+NAME=`basename $EXEC`
 
 USER=channelarchiver
 
@@ -26,9 +27,9 @@ PID=/var/run/channelarchiver.pid
 
 check_status() {
   if [ "$1" = "-q" ];then
-    status_of_proc -p "$PID" "ArchiverDaemon" "ArchiverDaemon" &>/dev/null
+    status_of_proc -p "$PID" "$NAME" "$NAME" &>/dev/null
   else
-    status_of_proc -p "$PID" "ArchiverDaemon" "ArchiverDaemon"
+    status_of_proc -p "$PID" "$NAME" "$NAME"
   fi
   return $?
 }
@@ -44,10 +45,13 @@ start)
 
     $SCRIPTS/gendaemon.sh "$BASE_DIR/daemon.xml" || die "Failed to generate daemon config"
 
+    touch $PID || die "Can't create $PID"
+    chown $USER $PID || die "Failed to give $PID to $USER"
+
     start-stop-daemon --start --pidfile $PID \
-        --chdir "$BASE_DIR" --startas $NAME --name $NAME \
+        --chdir "$BASE_DIR" --startas $EXEC --name $NAME \
         --chuid $USER \
-        -- -f "$BASE_DIR/daemon.xml"
+        -- -p $PID -f "$BASE_DIR/daemon.xml"
 
     sleep 2
 
