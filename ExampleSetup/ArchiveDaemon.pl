@@ -136,6 +136,22 @@ $weekdays[4] = "Thursday";
 $weekdays[5] = "Friday";
 $weekdays[6] = "Saturday";
 
+# Safe shutdown
+
+$SIG{TERM} = \&halt;
+$SIG{INT} = \&halt;
+
+sub halt {
+    my ($engine);
+    print "Shutting down\n";
+    foreach $engine ( keys %{ $config->{engine} } )
+    {
+        next unless ($config->{engine}{$engine}{started});
+        stop_engine($config->{engine}{$engine}{port});
+    }
+    exit(0);
+}
+
 # ----------------------------------------------------------------
 # Message Queue
 # ----------------------------------------------------------------
