@@ -3,6 +3,8 @@ channelarchiver (2.9.2+dfsg-1) unstable; urgency=low
   * Initial release
   * Original tarball cleaned.
     Removed unused third party tarballs and CVS debris
+  * Signicant changes to ArchiveDaemon perl script include changes to config XML schema.
+  * Add usage instructions to README.Debian
 
- -- Michael Davidsaver <mdavidsaver@bnl.gov>  Mon, 21 Dec 2009 20:25:13 -0500
+ -- Michael Davidsaver <mdavidsaver@bnl.gov>  Fri, 05 Feb 2010 12:31:03 -0500
 
