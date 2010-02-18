@@ -1,3 +1,9 @@
+channelarchiver (2.9.2+dfsg-3) unstable; urgency=low
+
+  * Silly typo is dependency list
+
+ -- Michael Davidsaver <mdavidsaver@bnl.gov>  Thu, 18 Feb 2010 10:21:36 -0500
+
 channelarchiver (2.9.2+dfsg-2) unstable; urgency=low
 
   * Add missing README.Debian
