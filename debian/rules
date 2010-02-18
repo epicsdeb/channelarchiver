@@ -23,7 +23,9 @@ DEB_INSTALL_DOCS_channelarchiver-doc += manual -XCVS -Xcvs
 
 DEB_INSTALL_DOCS_channelarchiver-engine += DataTool/make_compress_script.pl \
  Engine/ConvertEngineConfig.pl XMLRPCServer/ArchiveDataClient.pl \
- debian/engine-example.xml debian/index-example.xml
+ debian/engine-example.xml debian/index-example.xml debian/README.Debian
+
+DEB_INSTALL_DOCS_channelarchiver-dataserver += debian/README.Debian
 
 clean::
 	rm -f configure

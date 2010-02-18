@@ -28,6 +28,8 @@ RESTART_TIME="Mo 02:00"
 
 NOTE: See /etc/channelarchivier/daemon.conf for the format of RESTART_*.
 
+NOTE: When configuring multiple engines it is wise to configure them to restart at different times.
+
 and /etc/channelarchiver/myengine/engine.xml
 
 should contain
@@ -93,9 +95,15 @@ WARNING: By default your webserver will be exposed to the all other computers on
 
 1) # apt-get install apache2
 
-2) Edit /etc/apache2/mods-available/mime.conf
+2a) Edit /etc/apache2/mods-available/mime.conf
 
 Uncomment the line 'AddHandler cgi-script .cgi'
+
+or
+
+2b) Edit /etc/apache2/sites-enabled/000-default
+
+Add this same line to the '<Directory "/usr/lib/cgi-bin">' section in the default virtualhost.
 
 3) # /etc/init.d/apache2 start
 
