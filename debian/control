@@ -22,6 +22,8 @@ Description: The EPICS data archiving engine
 Package: channelarchiver-engine
 Architecture: any
 Depends: ${shlibs:Depends}, ${perl:Depends}, ${misc:Depends}, adduser,
+         libxml-simple-perl, libsys-hostname-long-perl.
+         libxml2-utils,
 Description: The EPICS data archiving engine
  The EPICS Channel Archiver
  .
