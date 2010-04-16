@@ -994,17 +994,14 @@ sub start_engine($$)
     symlink("$index", "$engine/current_index");
     print("symlink to $index\n");
 
-    if (!defined($current) || ($current ne $index))
+    # Inform index mechanism about the old 'current' sub-archive
+    # that's now complete, but only if that's really an older one.
+    # In case the new 'current_index' matches the one found,
+    # we should not yet copy/update anything.
+    if (exists($config->{engine}{$engine}{restart}{action}))
     {
-        # Inform index mechanism about the old 'current' sub-archive
-        # that's now complete, but only if that's really an older one.
-        # In case the new 'current_index' matches the one found,
-        # we should not yet copy/update anything.
-        if (exists($config->{engine}{$engine}{restart}{action}))
-        {
-            print "Action: $config->{engine}{$engine}{restart}{action}\n";
-            system($config->{engine}{$engine}{restart}{action});
-        }
+        print "Action: $config->{engine}{$engine}{restart}{action}\n";
+        system($config->{engine}{$engine}{restart}{action});
     }
 
     return 0;
