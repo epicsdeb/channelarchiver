@@ -33,6 +33,7 @@ Description: The EPICS data archiving engine
 Package: channelarchiver-tools
 Architecture: any
 Depends: ${shlibs:Depends}, ${perl:Depends},
+         libfrontier-rpc-perl,
 Description: The EPICS data archiving engine
  The EPICS Channel Archiver
  .

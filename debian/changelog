@@ -1,3 +1,9 @@
+channelarchiver (2.9.2+dfsg-4) unstable; urgency=low
+
+  * tools: missing dep of Perl RPC lib
+
+ -- Michael Davidsaver <mdavidsaver@bnl.gov>  Fri, 16 Apr 2010 16:48:54 -0400
+
 channelarchiver (2.9.2+dfsg-3) unstable; urgency=low
 
   * Silly typo is dependency list
