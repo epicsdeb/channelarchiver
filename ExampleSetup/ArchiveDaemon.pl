@@ -148,6 +148,7 @@ sub halt {
     {
         next unless ($config->{engine}{$engine}{started});
         stop_engine($config->{engine}{$engine}{port});
+        unlink($config->{engine}{$engine}{lockfile});
     }
     exit(0);
 }
