@@ -1,3 +1,10 @@
+channelarchiver (2.9.2+dfsg-5) unstable; urgency=low
+
+  * Always update index/dataserver config when (re)starting engine
+  * zap lockfile on shutdown
+
+ -- Michael Davidsaver <mdavidsaver@bnl.gov>  Fri, 20 Aug 2010 11:26:58 -0400
+
 channelarchiver (2.9.2+dfsg-4) unstable; urgency=low
 
   * tools: missing dep of Perl RPC lib
