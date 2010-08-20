@@ -11,6 +11,17 @@ Build-Depends: cdbs, debhelper (>= 7), xml-core,
 Standards-Version: 3.8.0
 Homepage: http://ics-web.sns.ornl.gov/kasemir/archiver/
 
+Package: channelarchiver
+Architecture: any
+Depends: channelarchiver-engine (= ${binary:Version}),
+         channelarchiver-dataserver (= ${binary:Version}),
+         channelarchiver-tools (= ${binary:Version}),
+Suggests: octave-channelarchiver (= ${binary:Version}), channelarchiver-doc
+Description: The EPICS data archiving engine
+ The EPICS Channel Archiver
+ .
+ This is a meta package with dependencies on all channelarchiver components
+
 Package: channelarchiver-doc
 Architecture: all
 Section: doc
