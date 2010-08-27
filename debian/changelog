@@ -1,3 +1,12 @@
+channelarchiver (2.9.2+dfsg-6) unstable; urgency=low
+
+  * create meta-package depending on all archiver components
+  * build from /usr/lib/epics
+  * Update alarm status/sev description strings variable name
+  * fix typos in debian/control
+
+ -- Michael Davidsaver <mdavidsaver@bnl.gov>  Fri, 27 Aug 2010 16:20:34 -0400
+
 channelarchiver (2.9.2+dfsg-5) unstable; urgency=low
 
   * Always update index/dataserver config when (re)starting engine
