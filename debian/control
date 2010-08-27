@@ -20,7 +20,7 @@ Suggests: octave-channelarchiver (= ${binary:Version}), channelarchiver-doc
 Description: The EPICS data archiving engine
  The EPICS Channel Archiver
  .
- This is a meta package with dependencies on all channelarchiver components
+ This is a metapackage with dependencies on all channelarchiver components
 
 Package: channelarchiver-doc
 Architecture: all

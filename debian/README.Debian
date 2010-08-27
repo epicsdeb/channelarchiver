@@ -139,7 +139,7 @@ Key 2: 'default/2009' in '/var/cache/channelarchiver/default/2009/year_index'
 The range of dates stored in 'default/Current' covers Feb. 1 2:00 through Feb. 5 12:07 with
 the range Jan. 1 through Feb. 1 in the 'default/2010' index.
 
-If data from Jan 30 through Feb 3 is desired then two seperate queries must be made, one on
+If data from Jan 30 through Feb 3 is desired then two separate queries must be made, one on
 the 'default/Current' index and a second on 'default/2010'.  The requester must them merge
 the two results.
 
