@@ -1,3 +1,4 @@
+#define epicsGlobalAlarm
 // System
 #include <stdio.h>
 #include <math.h>
@@ -551,8 +552,6 @@ xmlrpc_value *get_sheet_data(xmlrpc_env *env,
 // { int32  ver, string desc } = archiver.info()
 xmlrpc_value *get_info(xmlrpc_env *env, xmlrpc_value *args, void *user)
 {
-    extern const char *alarmStatusString[];
-    extern const char *alarmSeverityString[];
 #ifdef LOGFILE
     LOG_MSG("archiver.info\n");
 #endif
@@ -586,7 +585,7 @@ xmlrpc_value *get_info(xmlrpc_env *env, xmlrpc_value *args, void *user)
         return 0;
     for (i=0; i<=lastEpicsAlarmCond; ++i)
     {
-        element = xmlrpc_build_value(env, "s", alarmStatusString[i]);
+        element = xmlrpc_build_value(env, "s", epicsAlarmConditionStrings[i]);
         xmlrpc_array_append_item(env, status, element);
         if (env->fault_occurred)
             return 0;
@@ -597,7 +596,7 @@ xmlrpc_value *get_info(xmlrpc_env *env, xmlrpc_value *args, void *user)
     {
         element = xmlrpc_build_value(env, "{s:i,s:s,s:b,s:b}",
                                      "num", (xmlrpc_int32)i,
-                                     "sevr", alarmSeverityString[i],
+                                     "sevr", epicsAlarmSeverityStrings[i],
                                      "has_value", (xmlrpc_bool) 1,
                                      "txt_stat", (xmlrpc_bool) 1);
         xmlrpc_array_append_item(env, severity, element);
