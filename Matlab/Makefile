@@ -1,5 +1,5 @@
 
-EPICS_BASE = /usr/epics/base
+EPICS_BASE = /usr/lib/epics
 
 all:    octave matlab
 

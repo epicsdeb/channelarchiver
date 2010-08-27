@@ -7,7 +7,7 @@ include /usr/share/cdbs/1/rules/utils.mk
 # Defines MDIR and OCTDIR
 include /usr/share/octave/debian/defs.make
 
-EPICS_HOST_ARCH:=$(shell /usr/epics/base/startup/EpicsHostArch)
+EPICS_HOST_ARCH:=$(shell /usr/lib/epics/startup/EpicsHostArch)
 
 SOV=$(shell echo "$(DEB_NOEPOCH_VERSION)"| cut -f 1 -d '-')
 
@@ -35,7 +35,7 @@ clean::
 post-patches:: configure
 
 configure:
-	ln -s /usr/epics/extensions/configure .
+	ln -s /usr/lib/epics/extensions/configure .
 
 build/octave-channelarchiver:: build-octave-stamp
 
