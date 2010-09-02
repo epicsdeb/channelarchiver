@@ -95,7 +95,7 @@ do
         find "$year" -name index | \
         create_xml "$year/year_index.xml" - || die "Failed to create $y index config"
 
-        pushd "$year/$YYYY" >/dev/null || die "Failed to cd to $year"
+        pushd "$year" >/dev/null || die "Failed to cd to $year"
 
         ArchiveIndexTool year_index.xml year_index || die "Failed to create archive $year/year_index"
 
