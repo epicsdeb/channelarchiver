@@ -5,6 +5,12 @@ function die() {
     exit 1
 }
 
+function hashme() {
+    # take a CRC32 of the first arguement
+    # modulo 0x10000 to make it smaller
+    echo -n "$1" | python -c 'import sys,zlib;sys.stdout.write(str(zlib.crc32(sys.stdin.readline())%0x10000))'
+}
+
 CONF=/etc/channelarchiver/daemon.conf
 CDIR="$(dirname "$CONF")"
 
@@ -28,8 +34,6 @@ cat << EOF > "$TMP"
 <serverconfig>
 EOF
 
-IDX=1
-
 for dd in "$CDIR"/*
 do
     [ -d "$dd" ] || continue
@@ -39,6 +43,17 @@ do
 
     name=`basename $dd`
 
+    if [ -r "$BASE_DIR/$name/dataserver-key.txt" ]
+    then
+        # read existing ID
+        IDX=`awk '{printf "%s", $1;exit}' "$BASE_DIR/$name/dataserver-key.txt"`
+    else
+        # generate a new ID
+        IDX=`hashme "$name/$y"`
+        echo "$IDX" > "$BASE_DIR/$name/dataserver-key.txt" \
+        || echo "Warning: can't to write $IDX to '$BASE_DIR/$name/dataserver-key.txt'" >&2
+    fi
+
     if [ -f "$BASE_DIR/$name/current_index" ]; then
         cat << EOF >> "$TMP"
 <archive>
@@ -47,7 +62,7 @@ do
   <path>$BASE_DIR/$name/current_index</path>
 </archive>
 EOF
-        IDX=`expr $IDX \+ 1`
+
     fi
 done
 
@@ -67,6 +82,18 @@ do
         y=`basename "$year"`
 
         [ -f "$year/year_index" ] || continue
+
+
+        if [ -r "$year/dataserver-key.txt" ]
+        then
+            # read existing ID
+            IDX=`awk '{printf "%s", $1;exit}' "$year/dataserver-key.txt"`
+        else
+            # generate a new ID
+            IDX=`hashme "$name/$y"`
+            echo "$IDX" > "$year/dataserver-key.txt" \
+            || echo "Warning: can't to write $IDX to '$year/dataserver-key.txt'" >&2
+        fi
 
         cat << EOF >> "$TMP"
 <archive>
@@ -89,6 +116,5 @@ then
     mv "$TMP" "$OUT" || die "Failed to create $OUT"
 else
     echo "Invalid out"
-    rm -f "$TMP"
     exit 1
 fi
