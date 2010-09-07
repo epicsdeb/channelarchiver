@@ -1,3 +1,9 @@
+channelarchiver (2.9.2+dfsg-8) unstable; urgency=low
+
+  * persist archive keys.  Ensure that dataserver keys don't change
+
+ -- Michael Davidsaver <mdavidsaver@bnl.gov>  Tue, 07 Sep 2010 17:25:18 -0400
+
 channelarchiver (2.9.2+dfsg-7) unstable; urgency=low
 
   * typo prevents index generation for previous years
