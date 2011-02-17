@@ -17,6 +17,8 @@ matlab: $(OUT) $(OUT)/ArchiveData.mexglx
 # Even better: At least on Unix, both mkoctfile & mex
 # understand the same -v, -I, -L & -l syntax for that.
 
+MKOCTFILE=mkoctfile
+
 # Do you want verbose compilation?
 # FLAGS = -v
 # Includes -------------------------------------------
@@ -37,7 +39,7 @@ $(OUT):
 	mkdir $(OUT)
 
 $(OUT)/ArchiveData.oct: ArchiveData.cpp
-	mkoctfile -DOCTAVE $(FLAGS) ArchiveData.cpp -o $(OUT)/ArchiveData.oct
+	$(MKOCTFILE) -DOCTAVE $(FLAGS) ArchiveData.cpp -o $(OUT)/ArchiveData.oct
 
 $(OUT)/ArchiveData.mexglx: ArchiveData.cpp
 	mex $(FLAGS) ArchiveData.cpp -o $(OUT)/ArchiveData.mexglx
