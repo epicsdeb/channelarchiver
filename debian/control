@@ -55,7 +55,7 @@ Package: channelarchiver-dataserver
 Section: web
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
-         channelarchiver-engine (= ${binary:Version}),
+         channelarchiver-engine (= ${binary:Version}), python,
 Recommends: apache2 | httpd
 Description: The EPICS data archiving engine
  The EPICS Channel Archiver
