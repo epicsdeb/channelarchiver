@@ -20,7 +20,9 @@ matlab: $(OUT) $(OUT)/ArchiveData.mexglx
 MKOCTFILE=mkoctfile
 
 # Do you want verbose compilation?
-# FLAGS = -v
+FLAGS += -v
+# Don't emit shared library dependencies when not needed
+FLAGS += -Wl,--as-needed
 # Includes -------------------------------------------
 # Archiver
 FLAGS += -I../include
@@ -33,7 +35,7 @@ FLAGS += -L../lib/$(EPICS_HOST_ARCH) -lDataServer -lStorage -lTools
 FLAGS += -L$(EPICS_BASE)/lib/$(EPICS_HOST_ARCH) -ldbStaticHost -lCom -lca
 # XML-RPC library
 # TODO: This is not portable to Win32
-FLAGS += `xmlrpc-c-config libwww-client --libs  | sed -e 's/-Wl,--rpath.*//'`
+FLAGS += `xmlrpc-c-config client --ldadd`
 
 $(OUT):
 	mkdir $(OUT)
