@@ -1,3 +1,15 @@
+channelarchiver (2.9.2+dfsg-9) unstable; urgency=low
+
+  * Update for Squeeze
+  * Build extension octave 3.2
+  * use --as-needed when linking octave extension
+  * add missing commands to init script
+  * genserver.sh uses python.  Add dependency in channelarchiver-
+    dataserver
+  * update.sh automatically run as correct user
+
+ -- Michael Davidsaver <mdavidsaver@bnl.gov>  Thu, 17 Feb 2011 11:50:16 -0500
+
 channelarchiver (2.9.2+dfsg-8) unstable; urgency=low
 
   * persist archive keys.  Ensure that dataserver keys don't change
