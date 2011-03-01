@@ -7,7 +7,15 @@ OUT=O.$(EPICS_HOST_ARCH)
 
 octave:	$(OUT) $(OUT)/ArchiveData.oct
 
-matlab: $(OUT) $(OUT)/ArchiveData.mexglx
+ifneq ($(EPICS_HOST_ARCH),linux-x86_64)
+MEXEXT=mexglx
+else
+MEXEXT=mexa64
+endif
+
+matlab: $(OUT) $(OUT)/ArchiveData.$(MEXEXT)
+
+MEX=/dls_sw/prod/tools/RHEL5/bin/mex
 
 # Both Octave and Matlab include
 # compilation tools mkoctfile resp. mex
@@ -43,8 +51,8 @@ $(OUT):
 $(OUT)/ArchiveData.oct: ArchiveData.cpp
 	$(MKOCTFILE) -DOCTAVE $(FLAGS) ArchiveData.cpp -o $(OUT)/ArchiveData.oct
 
-$(OUT)/ArchiveData.mexglx: ArchiveData.cpp
-	mex $(FLAGS) ArchiveData.cpp -o $(OUT)/ArchiveData.mexglx
+$(OUT)/ArchiveData.$(MEXEXT): ArchiveData.cpp
+	$(MEX) $(FLAGS) ArchiveData.cpp -o $(OUT)/ArchiveData.$(MEXEXT)
 
 # In reality, your milage will vary.
 # Matlab 6p1 under Linux gave this runtime error:
