@@ -3,6 +3,8 @@
 #ifndef __RTREE_H__
 #define __RTREE_H__
 
+#include <FileOffsets.h>
+
 // Tools
 #include <epicsTimeHelper.h>
 #include <AVLTree.h>
@@ -57,16 +59,16 @@ public:
     {
     public:
         Datablock() : next_ID(0), data_offset(0), offset(0) {}
-        FileOffset    next_ID;       
-        FileOffset    data_offset;   /**< This block's offset in DataFile */
+        IndexFileOffset    next_ID;       
+        IndexFileOffset    data_offset;   /**< This block's offset in DataFile */
         stdString data_filename;     /**< DataFile for this block */
         
-        FileOffset offset;           /**< Location of DataBlock in index file */
-        FileOffset getSize() const;
+        IndexFileOffset offset;           /**< Location of DataBlock in index file */
+        IndexFileOffset getSize() const;
         /** @exception GenericException on write error */
-        void write(FILE *f) const;
+        void write(FILE *f, int file_offset_size) const;
         /** @exception GenericException on read error */
-        void read(FILE *f);
+        void read(FILE *f, int file_offset_size);
     private:
         PROHIBIT_DEFAULT_COPY(Datablock);
     };
@@ -77,11 +79,11 @@ public:
         Record();
         void clear();
         epicsTime  start, end;  // Range
-        FileOffset child_or_ID; // data block ID for leaf node; 0 if unused
+        IndexFileOffset child_or_ID; // data block ID for leaf node; 0 if unused
         /** @exception GenericException on write error */
-        void write(FILE *f) const;
+        void write(FILE *f, int file_offset_size) const;
         /** @exception GenericException on read error */
-        void read(FILE *f);
+        void read(FILE *f, int file_offset_size);
     };
 
     class Node
@@ -94,19 +96,19 @@ public:
         Node &operator = (const Node &);
         
         bool    isLeaf;  /**< Node or Leaf?        */ 
-        FileOffset  parent;  /**< 0 for root */
+        IndexFileOffset  parent;  /**< 0 for root */
         Record  *record; /**< index records of this node */
-        FileOffset  offset;  /**< Location in file */
+        IndexFileOffset  offset;  /**< Location in file */
         
         /** Write to file at offset (needs to be set beforehand)
           * @exception GenericException on write error
           */
-        void write(FILE *f) const;
+        void write(FILE *f, int file_offset_size) const;
 
         /** Read from file at offset (needs to be set beforehand)
          *  @exception GenericException on read error
          */
-        void read(FILE *f);
+        void read(FILE *f, int file_offset_size);
 
         /** Obtain interval covered by this node
           * @return True if there is a valid interval, false if empty.
@@ -127,7 +129,7 @@ public:
      *                RTree::anchor_size
      *                bytes available at that location in the file.
      */
-    RTree(FileAllocator &fa, FileOffset anchor);
+    RTree(FileAllocator &fa, IndexFileOffset anchor);
     
     /** Initialize empty tree. Compare to reattach().
       * @exception GenericException on write error.
@@ -165,7 +167,7 @@ public:
      * @exception GenericException on write error.
      */
     bool insertDatablock(const epicsTime &start, const epicsTime &end,
-                         FileOffset data_offset,
+                         IndexFileOffset data_offset,
                          const stdString &data_filename);
     
     /** Locate entry after start time.
@@ -230,7 +232,7 @@ public:
      * @exception GenericException on write error.
      */
     bool updateLastDatablock(const epicsTime &start, const epicsTime &end,
-                             FileOffset data_offset, stdString data_filename);
+                             IndexFileOffset data_offset, stdString data_filename);
     
     /** Create a graphviz 'dot' file. */
     void makeDot(const char *filename);
@@ -252,12 +254,12 @@ private:
     // This is the (fixed) offset into the file
     // where the RTree information starts.
     // It points to
-    // FileOffset current root offset
-    // FileOffset RTreeM
-    FileOffset anchor;
+    // IndexFileOffset current root offset
+    // IndexFileOffset RTreeM
+    IndexFileOffset anchor;
     
-    // FileOffset to the root = content of what's at anchor
-    FileOffset root_offset;
+    // IndexFileOffset to the root = content of what's at anchor
+    IndexFileOffset root_offset;
 
     int M;
     
@@ -271,10 +273,10 @@ private:
     
     /** @exception GenericException on error */
     void self_test_node(unsigned long &nodes, unsigned long &records,
-                        FileOffset n, FileOffset p,
+                        IndexFileOffset n, IndexFileOffset p,
                         epicsTime start, epicsTime end);
     
-    void make_node_dot(FILE *dot, FILE *f, FileOffset node_offset);
+    void make_node_dot(FILE *dot, FILE *f, IndexFileOffset node_offset);
 
     bool search(const epicsTime &start, Node &node, int &i) const;
 
@@ -304,14 +306,14 @@ private:
      * @exception GenericException if something's messed up.
      */
     bool add_block_to_record(const Node &node, int i,
-                            FileOffset data_offset,
+                            IndexFileOffset data_offset,
                             const stdString &data_filename);
     
     /** Configure block for data_offset/name,
      * allocate space in file and write.
      * @exception GenericException on write error.
      */
-    void write_new_datablock(FileOffset data_offset,
+    void write_new_datablock(IndexFileOffset data_offset,
                              const stdString &data_filename,
                              Datablock &block);
     
@@ -326,7 +328,7 @@ private:
                                  int idx,
                                  const epicsTime &start,
                                  const epicsTime &end,
-                                 FileOffset ID,
+                                 IndexFileOffset ID,
                                  Node &overflow,
                                  bool &caused_overflow, bool &rec_in_overflow);
     
@@ -339,7 +341,7 @@ private:
     void adjust_tree(Node &node, Node *new_node);
 
     /** Remove entry from tree. */
-    bool remove(const epicsTime &start, const epicsTime &end, FileOffset ID);
+    bool remove(const epicsTime &start, const epicsTime &end, IndexFileOffset ID);
 
     /** Remove record i from node, condense tree.
      * @exception GenericException on read/write error.
@@ -365,7 +367,7 @@ private:
      *         and the end time was succesfully updated.
      */
     bool updateLast(const epicsTime &start,
-                    const epicsTime &end, FileOffset ID);
+                    const epicsTime &end, IndexFileOffset ID);
 };
 
 #endif

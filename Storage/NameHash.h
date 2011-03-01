@@ -8,7 +8,7 @@
 #include <NoCopy.h>
 // Storage
 #include <FileAllocator.h>
-
+#include <FileOffsets.h>
 /// \addtogroup Storage
 /// \@{
 
@@ -39,30 +39,30 @@ public:
     public:
         stdString  name;  ///< Channel Name.
         stdString  ID_txt;///< String and numeric ID
-        FileOffset ID;    ///< (filename and offset to RTree for the channel).
-        FileOffset next;  ///< Offset to next entry w/ same hash value
+        IndexFileOffset ID;    ///< (filename and offset to RTree for the channel).
+        IndexFileOffset next;  ///< Offset to next entry w/ same hash value
 
-        FileOffset offset;///< Offset of this Entry
+        IndexFileOffset offset;///< Offset of this Entry
 
         /// Size of entry
-        FileOffset getSize() const;
+        IndexFileOffset getSize() const;
         /// Write at offset.
         /// @exception GenericException on error.
-        void write(FILE *f) const;
+        void write(FILE *f, int file_offset_size) const;
 
         /// Read from offset.
         /// @exception GenericException on error.
-        void read(FILE *f);
+        void read(FILE *f, int file_offset_size);
     };
 
-    static const uint32_t anchor_size = 8;
+    static const uint32_t anchor_size = sizeof(IndexFileOffset) + sizeof(uint32_t);
     
     /// Constructor.
     ///
     /// @param anchor: The NameHash will deposit its root pointer there.
     ///                Caller needs to assert that there are anchor_size
     ///                bytes available at that location in the file.
-    NameHash(FileAllocator &fa, FileOffset anchor);
+    NameHash(FileAllocator &fa, IndexFileOffset anchor);
 
     /// Create a new hash table of given size.
     ///
@@ -78,12 +78,12 @@ public:
     /// @return True if a new entry was generated, false if an existing
     ///         entry for that name was updated with possibly new information.
     /// @exception GenericException on error.
-    bool insert(const stdString &name, const stdString &ID_txt, FileOffset ID);
+    bool insert(const stdString &name, const stdString &ID_txt, IndexFileOffset ID);
 
     /// Locate name and obtain its ID.
     /// @return Returns true on success, false when name is 
     /// @exception GenericException on error.
-    bool find(const stdString &name, stdString &ID_txt, FileOffset &ID);
+    bool find(const stdString &name, stdString &ID_txt, IndexFileOffset &ID);
     
     /// Start iterating over all entries (in table's order).
     ///
@@ -107,15 +107,15 @@ public:
 private:
     PROHIBIT_DEFAULT_COPY(NameHash);
     FileAllocator &fa;
-    FileOffset anchor;       // Where offset gets deposited in file
+    IndexFileOffset anchor;       // Where offset gets deposited in file
     uint32_t ht_size;   // Hash Table size (entries, not bytes)
-    FileOffset table_offset; // Start of HT in file
+    IndexFileOffset table_offset; // Start of HT in file
     /// Seek to hash_value, read offset.
     /// @exception GenericException on read error.
-    void read_HT_entry(uint32_t hash_value, FileOffset &offset);
+    void read_HT_entry(uint32_t hash_value, IndexFileOffset &offset);
     /// Seek to hash_value, write offset.
     /// @exception GenericException on write error.
-    void write_HT_entry(uint32_t hash_value, FileOffset offset) const;
+    void write_HT_entry(uint32_t hash_value, IndexFileOffset offset) const;
 };
 
 /// \@}

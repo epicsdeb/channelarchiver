@@ -22,10 +22,10 @@
 
 // We read/write the contents ourself,
 // not including possible pad bytes of the structure
-static const FileOffset list_node_size = 12;
+static const IndexFileOffset list_node_size = 3 * sizeof(IndexFileOffset);
 
-FileOffset FileAllocator::minimum_size = 64;
-FileOffset FileAllocator::file_size_increment = 0;
+IndexFileOffset FileAllocator::minimum_size = 64;
+IndexFileOffset FileAllocator::file_size_increment = 0;
 
 FileAllocator::FileAllocator()
 {
@@ -33,6 +33,7 @@ FileAllocator::FileAllocator()
     printf("New FileAllocator\n");
 #endif
     f = 0;
+    file_offset_size = 64;
 }
 
 FileAllocator::~FileAllocator()
@@ -48,7 +49,7 @@ FileAllocator::~FileAllocator()
 #endif
 }    
 
-bool FileAllocator::attach(FILE *f, FileOffset reserved_space, bool init)
+bool FileAllocator::attach(FILE *f, IndexFileOffset reserved_space, bool init)
 {
 #ifdef DEBUG_FA
     printf("FileAllocator::attach()\n");
@@ -56,11 +57,11 @@ bool FileAllocator::attach(FILE *f, FileOffset reserved_space, bool init)
     LOG_ASSERT(f != 0);
     this->f = f;
     this->reserved_space = reserved_space;
-    if (fseek(this->f, 0, SEEK_END))
-        throw GenericException(__FILE__, __LINE__, "fseek error");
-    file_size = ftell(this->f);
+    if (fseeko(this->f, 0, SEEK_END))
+        throw GenericException(__FILE__, __LINE__, "fseeko error");
+    file_size = ftello(this->f);
     if (file_size < 0)
-        throw GenericException(__FILE__, __LINE__, "ftell error");
+        throw GenericException(__FILE__, __LINE__, "ftello error");
     // File size should be
     // 0 for new file or at least reserved_space + list headers
     if (file_size == 0)
@@ -73,8 +74,8 @@ bool FileAllocator::attach(FILE *f, FileOffset reserved_space, bool init)
         memset(&free_head, 0, list_node_size);
         write_node(this->reserved_space, &allocated_head);
         write_node(this->reserved_space+list_node_size, &free_head);
-        file_size = ftell(this->f);
-        FileOffset expected = reserved_space + 2*list_node_size;
+        file_size = ftello(this->f);
+        IndexFileOffset expected = reserved_space + 2*list_node_size;
         if (file_size != expected)
              throw GenericException(__FILE__, __LINE__,
                                     "Initialization error: "
@@ -82,7 +83,7 @@ bool FileAllocator::attach(FILE *f, FileOffset reserved_space, bool init)
                                     (long) expected, (long) file_size);
         return true; 
     }
-    FileOffset expected = this->reserved_space + 2*list_node_size;
+    IndexFileOffset expected = this->reserved_space + 2*list_node_size;
     if (file_size < expected)
         throw GenericException(__FILE__, __LINE__,
                                "FileAllocator: Broken file header,"
@@ -109,12 +110,12 @@ void FileAllocator::detach()
 #endif
 }
 
-FileOffset FileAllocator::allocate(FileOffset num_bytes)
+IndexFileOffset FileAllocator::allocate(IndexFileOffset num_bytes)
 {
     if (num_bytes < minimum_size)
         num_bytes = minimum_size;
     list_node node;
-    FileOffset node_offset;
+    IndexFileOffset node_offset;
     // Check free list for a valid entry
     node_offset = free_head.next;
     while (node_offset)
@@ -138,7 +139,7 @@ FileOffset FileAllocator::allocate(FileOffset num_bytes)
                 write_node(node_offset, &node);
                 write_node(reserved_space+list_node_size, &free_head);
                 // Create, insert & return new node
-                FileOffset new_offset =
+                IndexFileOffset new_offset =
                     node_offset + list_node_size + node.bytes;
                 list_node new_node;
                 new_node.bytes = num_bytes;
@@ -151,7 +152,7 @@ FileOffset FileAllocator::allocate(FileOffset num_bytes)
     }
     // Need to append new block.
     // grow file
-    if (fseek(f, file_size+list_node_size+num_bytes-1, SEEK_SET) != 0  ||
+    if (fseeko(f, file_size+list_node_size+num_bytes-1, SEEK_SET) != 0  ||
         fwrite("", 1, 1, f) != 1)
         throw GenericException(__FILE__, __LINE__, "Write Error");
     // write new node
@@ -173,7 +174,7 @@ FileOffset FileAllocator::allocate(FileOffset num_bytes)
     allocated_head.prev = file_size;
     write_node(reserved_space, &allocated_head);
     // Update overall file size, return offset of new data block
-    FileOffset data_offset = file_size + list_node_size;
+    IndexFileOffset data_offset = file_size + list_node_size;
     file_size = data_offset + num_bytes;
     if (file_size_increment > 0)
     {
@@ -194,7 +195,7 @@ FileOffset FileAllocator::allocate(FileOffset num_bytes)
     return data_offset;
 }
 
-void FileAllocator::free(FileOffset block_offset)
+void FileAllocator::free(IndexFileOffset block_offset)
 {
     // list_node should precede the memory block,
     // so it cannot start before reserved_space + heads + 1st buffer node,
@@ -205,7 +206,7 @@ void FileAllocator::free(FileOffset block_offset)
                                "FileAllocator::free, impossible offset %ld\n",
                                (unsigned long)block_offset);
     list_node node;
-    FileOffset node_offset = block_offset - list_node_size;
+    IndexFileOffset node_offset = block_offset - list_node_size;
     read_node(node_offset, &node);
     if (node_offset + node.bytes > file_size)
         throw GenericException(__FILE__, __LINE__,
@@ -218,7 +219,7 @@ void FileAllocator::free(FileOffset block_offset)
                 node_offset, &node);
     // Check if we can merge with the preceeding block
     list_node pred;
-    FileOffset pred_offset = node.prev;
+    IndexFileOffset pred_offset = node.prev;
     if (pred_offset)
     {
         read_node(pred_offset, &pred);
@@ -249,7 +250,7 @@ void FileAllocator::free(FileOffset block_offset)
 
     // Check if we can merge with the succeeding block
     list_node succ;
-    FileOffset succ_offset = node.next;
+    IndexFileOffset succ_offset = node.next;
     if (succ_offset)
     {
         if (node_offset + list_node_size + node.bytes == succ_offset)
@@ -282,11 +283,11 @@ bool FileAllocator::dump(int level, FILE *f)
     try
     {
         list_node allocated_node, free_node;
-        FileOffset allocated_offset, free_offset;
-        FileOffset allocated_prev = 0, free_prev = 0;
-        FileOffset allocated_mem = 0, allocated_blocks = 0;
-        FileOffset free_mem = 0, free_blocks = 0;
-        FileOffset next_offset = 0;
+        IndexFileOffset allocated_offset, free_offset;
+        IndexFileOffset allocated_prev = 0, free_prev = 0;
+        IndexFileOffset allocated_mem = 0, allocated_blocks = 0;
+        IndexFileOffset free_mem = 0, free_blocks = 0;
+        IndexFileOffset next_offset = 0;
         if (level > 0)
             fprintf(f, "bytes in file: %ld. Reserved/Allocated/Free: %ld/%ld/%ld\n",
                    (long)file_size,
@@ -377,33 +378,33 @@ bool FileAllocator::dump(int level, FILE *f)
     return ok;
 }
 
-void FileAllocator::read_node(FileOffset offset, list_node *node)
+void FileAllocator::read_node(IndexFileOffset offset, list_node *node)
 {
-    if (! (fseek(f, offset, SEEK_SET) == 0  &&
-           readLong(f, &node->bytes) &&
-           readLong(f, &node->prev) &&
-           readLong(f, &node->next)))
+    if (! (fseeko(f, offset, SEEK_SET) == 0  &&
+           ReadIndexFileOffset(f, &node->bytes, file_offset_size) &&
+           ReadIndexFileOffset(f, &node->prev,  file_offset_size) &&
+           ReadIndexFileOffset(f, &node->next,  file_offset_size)))
         throw GenericException(__FILE__, __LINE__,
                                "FileAllocator node read at 0x%08lX failed",
                                (unsigned long)offset);
 }
 
-void FileAllocator::write_node(FileOffset offset, const list_node *node)
+void FileAllocator::write_node(IndexFileOffset offset, const list_node *node)
 {
-    if (! (fseek(f, offset, SEEK_SET) == 0  &&
-           writeLong(f, node->bytes) &&
-           writeLong(f, node->prev) &&
-           writeLong(f, node->next)))
+    if (! (fseeko(f, offset, SEEK_SET) == 0  &&
+           WriteIndexFileOffset(f, node->bytes, file_offset_size) &&
+           WriteIndexFileOffset(f, node->prev,  file_offset_size) &&
+           WriteIndexFileOffset(f, node->next,  file_offset_size)))
         throw GenericException(__FILE__, __LINE__,
                                "FileAllocator node write at 0x%08lX failed",
                                (unsigned long)offset);
 }
 
-void FileAllocator::remove_node(FileOffset head_offset, list_node *head,
-                                FileOffset node_offset, const list_node *node)
+void FileAllocator::remove_node(IndexFileOffset head_offset, list_node *head,
+                                IndexFileOffset node_offset, const list_node *node)
 {
     list_node tmp;
-    FileOffset tmp_offset;
+    IndexFileOffset tmp_offset;
 
     if (head->next == node_offset)
     {   // first node; make head skip it
@@ -447,8 +448,8 @@ void FileAllocator::remove_node(FileOffset head_offset, list_node *head,
     }
 }
 
-void FileAllocator::insert_node(FileOffset head_offset, list_node *head,
-                                 FileOffset node_offset, list_node *node)
+void FileAllocator::insert_node(IndexFileOffset head_offset, list_node *head,
+                                 IndexFileOffset node_offset, list_node *node)
 {
     // add node to list of free blocks
     if (head->next == 0)
@@ -479,7 +480,7 @@ void FileAllocator::insert_node(FileOffset head_offset, list_node *head,
     }
     // find proper location in free list
     list_node pred;
-    FileOffset pred_offset = head->next;
+    IndexFileOffset pred_offset = head->next;
     read_node(pred_offset, &pred);
     while (pred.next && pred.next < node_offset)
     {

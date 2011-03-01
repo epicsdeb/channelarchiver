@@ -8,6 +8,8 @@
 // Storage
 #include <StorageTypes.h>
 
+#include <FileOffsets.h>
+
 /// \addtogroup Storage
 /// @{
 ///
@@ -51,7 +53,7 @@ public:
     ///         so see if this file does indeed contain
     ///         a FileAllocator header, and false is returned.
     /// @exception GenericException on error.
-    bool attach(FILE *f, FileOffset reserved_space, bool init);
+    bool attach(FILE *f, IndexFileOffset reserved_space, bool init);
 
     /// After attaching to a file, this returns the file
     FILE *getFile() const;
@@ -63,7 +65,7 @@ public:
     ///
     /// @see free()
     /// @exception GenericException on error.
-    FileOffset allocate(FileOffset num_bytes);
+    IndexFileOffset allocate(IndexFileOffset num_bytes);
 
     /// Release a file block (will be placed in free list).
     ///
@@ -74,7 +76,7 @@ public:
     /// for inknown memory regions.
     ///
     /// @exception GenericException on error.
-    void free(FileOffset offset);
+    void free(IndexFileOffset offset);
 
     /// To avoid allocating tiny areas,
     /// also to avoid splitting free blocks into pieces
@@ -82,11 +84,11 @@ public:
     /// all memory regions are at least this big.
     /// Meaning: Whenever you allocate less than minimum_size,
     /// you will get a block that's actually minimum_size.
-    static FileOffset minimum_size;
+    static IndexFileOffset minimum_size;
 
     /// Setting file_size_increment will cause the file size
     /// to jump in the given increments.
-    static FileOffset file_size_increment;
+    static IndexFileOffset file_size_increment;
     
     /// Show ASCII-type info about the file structure.
     ///
@@ -104,6 +106,8 @@ public:
     ///
     /// Returns true for 'OK'.
     bool dump(int level=1, FILE *f=stdout);
+
+    int file_offset_size;
     
 private:
     PROHIBIT_DEFAULT_COPY(FileAllocator);
@@ -111,14 +115,14 @@ private:
     // TODO: Refactor as class??
     typedef struct
     {
-        FileOffset bytes;
-        FileOffset prev;
-        FileOffset next;
+        IndexFileOffset bytes;
+        IndexFileOffset prev;
+        IndexFileOffset next;
     } list_node;
     
     FILE *f;
-    FileOffset reserved_space; // Bytes we ignore in header
-    FileOffset file_size; // Total # of bytes in file
+    IndexFileOffset reserved_space; // Bytes we ignore in header
+    IndexFileOffset file_size; // Total # of bytes in file
     // For the head nodes,
     // 'prev' = last entry, tail of list,
     // 'next' = first entry, head of list!
@@ -128,15 +132,15 @@ private:
     
     // Read/write a list_node.
     // @exception GenericException on read/write error.
-    void read_node(FileOffset offset, list_node *node);
-    void write_node(FileOffset offset, const list_node *node);
+    void read_node(IndexFileOffset offset, list_node *node);
+    void write_node(IndexFileOffset offset, const list_node *node);
 
     // Unlink node from list, node itself remains unchanged
-    void remove_node(FileOffset head_offset, list_node *head,
-                     FileOffset node_offset, const list_node *node);
+    void remove_node(IndexFileOffset head_offset, list_node *head,
+                     IndexFileOffset node_offset, const list_node *node);
     // Insert node (sorted), node's prev/next get changed
-    void insert_node(FileOffset head_offset, list_node *head,
-                     FileOffset node_offset, list_node *node);
+    void insert_node(IndexFileOffset head_offset, list_node *head,
+                     IndexFileOffset node_offset, list_node *node);
 };
 
 ///

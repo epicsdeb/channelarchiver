@@ -80,11 +80,17 @@ void add_tree_to_master(const stdString &index_name,
     }
 }
 
-void create_masterindex(int RTreeM,
+void create_masterindex(int RTreeM, int HTsize,
                         const stdString &config_name,
                         const stdString &index_name,
                         bool reindex)
 {
+    if(HTsize != 0)
+    {
+        IndexFile::ht_size = HTsize;
+        printf("Changing hash table size to %d\n", IndexFile::ht_size);
+    }
+
     IndexConfig config;
     if (reindex)
         config.subarchives.push_back(config_name);
@@ -166,7 +172,9 @@ int main(int argc, const char *argv[])
     CmdArgInt  RTreeM (parser, "M", "<3-100>", "RTree M value");
     CmdArgFlag reindex(parser, "reindex", "Build new index from old index (no list file)");
     CmdArgInt  verbose_flag (parser, "verbose", "<level>", "Show more info");
+    CmdArgInt  HTsize (parser, "H", "<prime>", "Hashtable Size");
     RTreeM.set(50);
+    HTsize.set(0);
     if (!(parser.parse()  &&  parser.getArguments().size() == 2))
     {
         parser.usage();
@@ -201,7 +209,7 @@ int main(int argc, const char *argv[])
     {
         Lockfile lock_file("indextool_active.lck", argv[0]);
         BenchTimer timer;
-        create_masterindex(RTreeM, old_index_name, new_index_name, reindex);
+        create_masterindex(RTreeM, HTsize, old_index_name, new_index_name, reindex);
         timer.stop();
         if (verbose > 0)
             printf("Time: %s\n", timer.toString().c_str());

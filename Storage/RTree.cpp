@@ -6,35 +6,36 @@
 
 //  1240    lines before exceptions
 
-#define RecordSize  (8+8+4)
-#define NodeSize(M)    (1+4+RecordSize*(M))
+#define RecordSize  ((sizeof (epicsTime)) * 2 + sizeof (IndexFileOffset))
+#define NodeSize(M) (sizeof (bool) + sizeof (IndexFileOffset) + RecordSize*(M))
 
-FileOffset RTree::Datablock::getSize() const
+IndexFileOffset RTree::Datablock::getSize() const
 {   //  next_ID, data offset, name size, name (w/o '\0')
-    return 4 + 4 + 2 + data_filename.length();
+    return sizeof(IndexFileOffset) + sizeof(IndexFileOffset) + 
+        sizeof(short) + data_filename.length();
 }
 
-void RTree::Datablock::write(FILE *f) const
+void RTree::Datablock::write(FILE *f, int file_offset_size) const
 {
-    if (fseek(f, offset, SEEK_SET))
-        throw GenericException(__FILE__, __LINE__, "fseek(0x%08lX) failed",
+    if (fseeko(f, offset, SEEK_SET))
+        throw GenericException(__FILE__, __LINE__, "fseeko(0x%08lX) failed",
                                (unsigned long) offset);
-    if (!(writeLong(f, next_ID) && writeLong(f, data_offset) &&
+    if (!(WriteIndexFileOffset(f, next_ID, file_offset_size) && WriteIndexFileOffset(f, data_offset, file_offset_size) &&
           writeShort(f, data_filename.length()) &&
           fwrite(data_filename.c_str(), data_filename.length(), 1, f) == 1))
         throw GenericException(__FILE__, __LINE__, "write failed @ 0x%08lX",
                                (unsigned long) offset);
 }
 
-void RTree::Datablock::read(FILE *f)
+void RTree::Datablock::read(FILE *f, int file_offset_size)
 {
-    if (fseek(f, offset, SEEK_SET))
-        throw GenericException(__FILE__, __LINE__, "fseek(0x%08lX) failed",
+    if (fseeko(f, offset, SEEK_SET))
+        throw GenericException(__FILE__, __LINE__, "fseeko(0x%08lX) failed",
                                (unsigned long) offset);
     unsigned short len;
     char buf[300];
-    if (!(readLong(f, &next_ID) &&
-          readLong(f, &data_offset) &&
+    if (!(ReadIndexFileOffset(f, &next_ID, file_offset_size) &&
+          ReadIndexFileOffset(f, &data_offset, file_offset_size) &&
           readShort(f, &len)))
         throw GenericException(__FILE__, __LINE__, "read failed @ 0x%lX",
                                (unsigned long)offset);
@@ -106,19 +107,19 @@ void RTree::Record::clear()
     child_or_ID = 0;
 }
 
-void RTree::Record::write(FILE *f) const
+void RTree::Record::write(FILE *f, int file_offset_size) const
 {
     writeEpicsTime(f, start);
     writeEpicsTime(f, end);
-    if (!writeLong(f, child_or_ID))
+    if (!WriteIndexFileOffset(f, child_or_ID, file_offset_size))
         throw GenericException(__FILE__, __LINE__, "write error");
 }
 
-void RTree::Record::read(FILE *f)
+void RTree::Record::read(FILE *f, int file_offset_size)
 {
     readEpicsTime(f, start);
     readEpicsTime(f, end);
-    if (!readLong(f, &child_or_ID))
+    if (!ReadIndexFileOffset(f, &child_or_ID, file_offset_size))
         throw GenericException(__FILE__, __LINE__, "read error");
 }
 
@@ -166,31 +167,31 @@ RTree::Node &RTree::Node::operator = (const Node &rhs)
     return *this;
 }
 
-void RTree::Node::write(FILE *f) const
+void RTree::Node::write(FILE *f, int file_offset_size) const
 {
-    if (fseek(f, offset, SEEK_SET))
-        throw GenericException(__FILE__, __LINE__, "fseek(0x%08lX) failed",
+    if (fseeko(f, offset, SEEK_SET))
+        throw GenericException(__FILE__, __LINE__, "fseeko(0x%08lX) failed",
                                (unsigned long) offset);
     if (! (writeByte(f, isLeaf) &&
-           writeLong(f, parent)))
+           WriteIndexFileOffset(f, parent, file_offset_size)))
         throw GenericException(__FILE__, __LINE__, "write failed");
     int i;
     for (i=0; i<M; ++i)
-        record[i].write(f);
+        record[i].write(f, file_offset_size);
 }
 
-void RTree::Node::read(FILE *f)
+void RTree::Node::read(FILE *f, int file_offset_size)
 {
-    if (fseek(f, offset, SEEK_SET))
-        throw GenericException(__FILE__, __LINE__, "fseek(0x%08lX) failed",
+    if (fseeko(f, offset, SEEK_SET))
+        throw GenericException(__FILE__, __LINE__, "fseeko(0x%08lX) failed",
                                (unsigned long) offset);
     uint8_t c;
-    if (! (readByte(f, &c) && readLong(f, &parent)))
+    if (! (readByte(f, &c) && ReadIndexFileOffset(f, &parent, file_offset_size)))
         throw GenericException(__FILE__, __LINE__, "read failed");
     isLeaf = c > 0;
     int i;
     for (i=0; i<M; ++i)
-        record[i].read(f);
+        record[i].read(f, file_offset_size);
 }
 
 bool RTree::Node::getInterval(epicsTime &start, epicsTime &end) const
@@ -215,7 +216,7 @@ bool RTree::Node::getInterval(epicsTime &start, epicsTime &end) const
     return valid;
 }
 
-RTree::RTree(FileAllocator &fa, FileOffset anchor)
+RTree::RTree(FileAllocator &fa, IndexFileOffset anchor)
         :  fa(fa), anchor(anchor), root_offset(0), M(-1)
 {
     cache_misses = cache_hits = 0;
@@ -233,8 +234,8 @@ void RTree::init(int M)
     node.offset = root_offset;
     write_node(node);
     // Update Root pointer
-    if (! (fseek(fa.getFile(), anchor, SEEK_SET)==0 &&
-           writeLong(fa.getFile(), root_offset)==true &&
+    if (! (fseeko(fa.getFile(), anchor, SEEK_SET)==0 &&
+           WriteIndexFileOffset(fa.getFile(), root_offset, fa.file_offset_size)==true &&
            writeLong(fa.getFile(), M) == true))
         throw GenericException(__FILE__, __LINE__,
                                "write error @ 0x%08lX",
@@ -244,8 +245,8 @@ void RTree::init(int M)
 void RTree::reattach()
 {
     uint32_t RTreeM;
-    if (!(fseek(fa.getFile(), anchor, SEEK_SET)==0 &&
-          readLong(fa.getFile(), &root_offset)==true &&
+    if (!(fseeko(fa.getFile(), anchor, SEEK_SET)==0 &&
+          ReadIndexFileOffset(fa.getFile(), &root_offset, fa.file_offset_size)==true &&
           readLong(fa.getFile(), &RTreeM) == true))
         throw GenericException(__FILE__, __LINE__,
                                "read error @ 0x%08lX",
@@ -271,7 +272,7 @@ bool RTree::searchDatablock(const epicsTime &start, Node &node, int &i,
     if (!search(start, node, i))
         return false;
     block.offset = node.record[i].child_or_ID;
-    block.read(fa.getFile());
+    block.read(fa.getFile(), fa.file_offset_size);
     return true;
 }
 
@@ -280,7 +281,7 @@ bool RTree::getFirstDatablock(Node &node, int &i, Datablock &block) const
     if (!getFirst(node, i))
         return false;
     block.offset = node.record[i].child_or_ID;
-    block.read(fa.getFile());
+    block.read(fa.getFile(), fa.file_offset_size);
     return true;
 }
 
@@ -289,7 +290,7 @@ bool RTree::getLastDatablock(Node &node, int &i, Datablock &block) const
     if (!getLast(node, i))
         return false;
     block.offset = node.record[i].child_or_ID;
-    block.read(fa.getFile());
+    block.read(fa.getFile(), fa.file_offset_size);
     return true;
 }
 
@@ -298,7 +299,7 @@ bool RTree::getNextChainedBlock(Datablock &block) const
     if (block.next_ID == 0)
         return false;
     block.offset = block.next_ID;
-    block.read(fa.getFile());
+    block.read(fa.getFile(), fa.file_offset_size);
     return true;
 }
 
@@ -307,7 +308,7 @@ bool RTree::getPrevDatablock(Node &node, int &i, Datablock &block) const
     if (!prev(node, i))
         return false;
     block.offset = node.record[i].child_or_ID;
-    block.read(fa.getFile());
+    block.read(fa.getFile(), fa.file_offset_size);
     return true;
 }
 
@@ -316,13 +317,13 @@ bool RTree::getNextDatablock(Node &node, int &i, Datablock &block) const
     if (!next(node, i))
         return false;
     block.offset = node.record[i].child_or_ID;
-    block.read(fa.getFile());
+    block.read(fa.getFile(), fa.file_offset_size);
     return true;
 }
 
 bool RTree::updateLastDatablock(const epicsTime &start,
                                 const epicsTime &end,
-                                FileOffset data_offset,
+                                IndexFileOffset data_offset,
                                 stdString data_filename)
 {
     Node node(M, true);
@@ -343,7 +344,7 @@ bool RTree::updateLastDatablock(const epicsTime &start,
         //     hidden part 15..20 is inserted again, which ends up as a NOP.
         Datablock block;
         block.offset = node.record[i].child_or_ID;
-        block.read(fa.getFile());
+        block.read(fa.getFile(), fa.file_offset_size);
         // Is this the one and only block under the last node
         // and does it point to offset/filename? 
         if (block.next_ID == 0 &&
@@ -420,18 +421,18 @@ void RTree::read_node(Node &node) const
         return;
     }
     ++cache_misses;
-    node.read(fa.getFile());
+    node.read(fa.getFile(), fa.file_offset_size);
     node_cache.add(node);
 }
 
 void RTree::write_node(const Node &node)
 {
     node_cache.add(node);
-    node.write(fa.getFile());
+    node.write(fa.getFile(), fa.file_offset_size);
 }    
 
 void RTree::self_test_node(unsigned long &nodes, unsigned long &records,
-                           FileOffset n, FileOffset p,
+                           IndexFileOffset n, IndexFileOffset p,
                            epicsTime start, epicsTime end)
 {
     stdString txt1, txt2, txt3, txt4;
@@ -490,14 +491,14 @@ void RTree::self_test_node(unsigned long &nodes, unsigned long &records,
     }       
 }
 
-void RTree::make_node_dot(FILE *dot, FILE *f, FileOffset node_offset)
+void RTree::make_node_dot(FILE *dot, FILE *f, IndexFileOffset node_offset)
 {
     Datablock datablock;
     stdString txt1, txt2;
     int i;
     Node node(M, true);
     node.offset = node_offset;
-    node.read(f);
+    node.read(f, fa.file_offset_size);
     fprintf(dot, "\tnode%ld [ label=\"", (unsigned long)node.offset);
     for (i=0; i<M; ++i)
     {
@@ -522,7 +523,7 @@ void RTree::make_node_dot(FILE *dot, FILE *f, FileOffset node_offset)
                         (unsigned long)datablock.offset);
             while (datablock.offset)
             {
-                datablock.read(f);
+                datablock.read(f, fa.file_offset_size);
                 fprintf(dot, "\tid%lu "
                         "[ label=\"'%s' \\r@ 0x%lX \\r\",style=filled ];\n",
                         (unsigned long)datablock.offset,
@@ -676,7 +677,7 @@ bool RTree::prev_next(Node &node, int &i, int dir) const
 // Insertion follows Guttman except as indicated
 bool RTree::insertDatablock(const epicsTime &start,
                             const epicsTime &end,
-                            FileOffset data_offset,
+                            IndexFileOffset data_offset,
                             const stdString &data_filename)
 {
     stdString txt1, txt2;
@@ -760,7 +761,7 @@ bool RTree::insertDatablock(const epicsTime &start,
 }
 
 bool RTree::add_block_to_record(const Node &node, int i,
-                                FileOffset data_offset,
+                                IndexFileOffset data_offset,
                                 const stdString &data_filename)
 {
     LOG_ASSERT(node.isLeaf);
@@ -769,7 +770,7 @@ bool RTree::add_block_to_record(const Node &node, int i,
     while (block.next_ID) // run over blocks under record
     {
         block.offset = block.next_ID;
-        block.read(fa.getFile());
+        block.read(fa.getFile(), fa.file_offset_size);
         if (block.data_offset == data_offset &&
             block.data_filename == data_filename)
             return false; // found an existing datablock
@@ -778,11 +779,11 @@ bool RTree::add_block_to_record(const Node &node, int i,
     Datablock new_block;
     write_new_datablock(data_offset, data_filename, new_block);
     block.next_ID = new_block.offset;
-    block.write(fa.getFile());
+    block.write(fa.getFile(), fa.file_offset_size);
     return true; // added a new datablock
 }
 
-void RTree::write_new_datablock(FileOffset data_offset,
+void RTree::write_new_datablock(IndexFileOffset data_offset,
                                 const stdString &data_filename,
                                 Datablock &block)
 {
@@ -790,7 +791,7 @@ void RTree::write_new_datablock(FileOffset data_offset,
     block.data_offset = data_offset;
     block.data_filename = data_filename;
     block.offset = fa.allocate(block.getSize());
-    block.write(fa.getFile());
+    block.write(fa.getFile(), fa.file_offset_size);
 }
 
 // Check if intervals s1...e1 and s2...e2 overlap.
@@ -861,7 +862,7 @@ void RTree::choose_leaf(const epicsTime &start, const epicsTime &end,
 // Node gets written, overflow doesn't get written.
 void RTree::insert_record_into_node(Node &node, int idx,
                                     const epicsTime &start,
-                                    const epicsTime &end, FileOffset ID,
+                                    const epicsTime &end, IndexFileOffset ID,
                                     Node &overflow,
                                     bool &caused_overflow,
                                     bool &rec_in_overflow)
@@ -944,8 +945,8 @@ void RTree::adjust_tree(Node &node, Node *new_node)
         write_node(new_root);
         // Update Root pointer
         root_offset = new_root.offset;
-        if (! (fseek(fa.getFile(), anchor, SEEK_SET)==0 &&
-               writeLong(fa.getFile(), root_offset)==true))
+        if (! (fseeko(fa.getFile(), anchor, SEEK_SET)==0 &&
+               WriteIndexFileOffset(fa.getFile(), root_offset, fa.file_offset_size)==true))
             throw GenericException(__FILE__, __LINE__, "write error @ 0x%08lX",
                                    (unsigned long) anchor);
         return; // done.
@@ -1009,7 +1010,7 @@ void RTree::adjust_tree(Node &node, Node *new_node)
 
 // Follows Guttman except that we don't care about
 // half-filled nodes. Only empty nodes get removed.
-bool RTree::remove(const epicsTime &start, const epicsTime &end, FileOffset ID)
+bool RTree::remove(const epicsTime &start, const epicsTime &end, IndexFileOffset ID)
 {
     int i;
     Node node(M, true);
@@ -1072,14 +1073,14 @@ void RTree::condense_tree(Node &node)
                 }
             if (children==1)
             {   // only child_or_ID j left => make that one root
-                FileOffset old_root = node.offset;
+                IndexFileOffset old_root = node.offset;
                 root_offset = node.offset = node.record[j].child_or_ID;
                 read_node(node);
                 node.parent = 0;
                 write_node(node);
-                if (fseek(fa.getFile(), anchor, SEEK_SET) != 0)
+                if (fseeko(fa.getFile(), anchor, SEEK_SET) != 0)
                     throw GenericException(__FILE__, __LINE__, "seek failed");
-                writeLong(fa.getFile(), root_offset);
+                WriteIndexFileOffset(fa.getFile(), root_offset, fa.file_offset_size);
                 fa.free(old_root);
             }
         }
@@ -1121,7 +1122,7 @@ void RTree::condense_tree(Node &node)
 }
 
 bool RTree::updateLast(const epicsTime &start, const epicsTime &end,
-                       FileOffset ID)
+                       IndexFileOffset ID)
 {
     int i;
     Node node(M, true);

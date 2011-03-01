@@ -79,7 +79,7 @@ void IndexFile::open(const stdString &filename, bool readonly)
             throw GenericException(__FILE__, __LINE__,
                                    "IndexFile::open(%s) seek error",
                                    filename.c_str());
-        if (!writeLong(f, cookie))
+        if (!writeLong(f, cookie_64))
             throw GenericException(__FILE__, __LINE__,
                                    "IndexFile::open(%s) cannot write cookie.",
                                    filename.c_str());
@@ -96,13 +96,33 @@ void IndexFile::open(const stdString &filename, bool readonly)
         throw GenericException(__FILE__, __LINE__,
                                "IndexFile::open(%s) cannot read cookie.",
                                filename.c_str());
-    if (file_cookie != cookie)
+
+    if(file_cookie == cookie_32)
+    {
+        fa.file_offset_size = 32;
+        if(!readonly)
+        {
+            throw GenericException(__FILE__, __LINE__,
+                "IndexFile::open(%s) 32 bit index file "
+                "write access is not supported",
+                                   filename.c_str());
+        }
+    }
+    else if(file_cookie == cookie_64)
+    {
+        fa.file_offset_size = 64;
+    }
+    else
+    {
         throw GenericException(__FILE__, __LINE__,
                                "IndexFile::open(%s) Invalid cookie, "
-                               "0x%08lX instead of 0x%08lX.",
+                               "0x%08lX instead of 0x%08lX or 0x%08lX.",
                                filename.c_str(),
                                (unsigned long)file_cookie,
-                               (unsigned long)cookie);
+                               (unsigned long)cookie_32,
+                               (unsigned long)cookie_64);
+    }
+
     names.reattach();
 }
 
@@ -120,7 +140,7 @@ RTree *IndexFile::addChannel(const stdString &channel, stdString &directory)
     AutoPtr<RTree> tree(getTree(channel, directory));
     if (tree)
         return tree.release(); // Done, found existing.
-    FileOffset tree_anchor = fa.allocate(RTree::anchor_size);
+    IndexFileOffset tree_anchor = fa.allocate(RTree::anchor_size);
     try
     {
         tree = new RTree(fa, tree_anchor);
@@ -147,7 +167,7 @@ RTree *IndexFile::addChannel(const stdString &channel, stdString &directory)
 RTree *IndexFile::getTree(const stdString &channel, stdString &directory)
 {
     stdString  tree_filename;
-    FileOffset tree_anchor;
+    IndexFileOffset tree_anchor;
     if (!names.find(channel, tree_filename, tree_anchor))
         return 0; // All OK, but channel not found.
     // Using AutoPtr in case e.g. tree->reattach throws exception.

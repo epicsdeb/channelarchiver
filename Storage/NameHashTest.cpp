@@ -26,7 +26,7 @@ TEST_CASE name_hash_test()
         TEST(names.insert("james",  ID_txt, 3) == false);
         TEST(names.insert("James",  ID_txt, 4) == true);
 
-        FileOffset ID;
+        IndexFileOffset ID;
         TEST(names.find("freddy", ID_txt, ID));
         TEST(ID == 2);
 

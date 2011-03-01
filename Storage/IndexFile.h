@@ -26,8 +26,11 @@
 class IndexFile : public Index
 {
 public:
+
+    // == 'CAI3', Chan. Arch. Index 3
+    static const uint32_t cookie_64 = 0x43414933;
     // == 'CAI2', Chan. Arch. Index 2
-    static const uint32_t cookie = 0x43414932;
+    static const uint32_t cookie_32 = 0x43414932;
 
     IndexFile(int RTreeM = 50);
 

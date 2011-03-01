@@ -29,6 +29,7 @@ INC += AverageReader.h
 INC += LinearReader.h
 INC += PlotReader.h
 INC += SpreadsheetReader.h
+INC += FileOffsets.h
 # Old
 LIB_SRCS += HashTable.cpp
 LIB_SRCS += OldDirectoryFile.cpp
