@@ -5,6 +5,10 @@ function die() {
     exit 1
 }
 
+function warn() {
+    echo "$1" >&2
+}
+
 CONF=/etc/channelarchiver/daemon.conf
 CDIR="$(dirname "$CONF")"
 
@@ -70,11 +74,18 @@ do
 
     #TODO: Test that size of found files is < 2GB (aka 2^32)
 
-    find . -name index -a \
-    -not -samefile "$exclude" | \
-    create_xml "$BASE_DIR/$name/$YYYY/year_index.xml" - || die "Failed to create year index config"
+    if find . -name index -a \
+       -not -samefile "$exclude" | \
+       create_xml "$BASE_DIR/$name/$YYYY/year_index.xml" -
+    then
+        echo -n
+    else
+        echo "Failed to create year index config for $name" >&2
+        continue
+    fi
 
-    ArchiveIndexTool year_index.xml year_index || die "Failed to create archive $BASE_DIR/$name/$YYYY/year_index"
+    ArchiveIndexTool year_index.xml year_index \
+    || warn "Failed to create archive $BASE_DIR/$name/$YYYY/year_index" && continue
 
     popd >/dev/null
 
@@ -101,6 +112,6 @@ do
 
         popd >/dev/null
 
-    done || die "Fail"
+    done || warn "Failed to generate past config"
 
 done || die "Fail"
