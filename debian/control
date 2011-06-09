@@ -5,7 +5,7 @@ Maintainer: Michael Davidsaver <mdavidsaver@bnl.gov>
 Build-Depends: cdbs, debhelper (>= 7), xml-core,
                epics-dev (>= 3.14.11-2),
                epics-extensions-dev (>= 20091204.1),
-               octave3.2-headers, octave-pkg-dev,
+               octave3.0-headers, octave-pkg-dev,
                libxerces-c2-dev, libxmlrpc-c3-dev, libcurl3-dev,
                perl, libfrontier-rpc-perl
 Standards-Version: 3.8.0
