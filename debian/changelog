@@ -1,3 +1,10 @@
+channelarchiver (2.9.2+dfsg-10~lenny1) unstable; urgency=low
+
+  * switch to octave 3.0
+  * backport to lenny
+
+ -- Michael Davidsaver <mdavidsaver@bnl.gov>  Thu, 09 Jun 2011 17:54:45 -0400
+
 channelarchiver (2.9.2+dfsg-10) unstable; urgency=low
 
   * better error handling in updateindex.sh
