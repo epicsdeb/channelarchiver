@@ -1,3 +1,9 @@
+channelarchiver (2.9.2+dfsg-10) unstable; urgency=low
+
+  * better error handling in updateindex.sh
+
+ -- Michael Davidsaver <mdavidsaver@bnl.gov>  Thu, 09 Jun 2011 17:16:26 -0400
+
 channelarchiver (2.9.2+dfsg-9) unstable; urgency=low
 
   * Update for Squeeze
