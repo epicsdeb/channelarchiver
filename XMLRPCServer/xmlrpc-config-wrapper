@@ -3,12 +3,10 @@
 v=`xmlrpc-c-config --version`
 
 case $v in
-  1.0*) client="client"
-        ;;
   0.*)  client="libwww-client"
         ;;
-  *)    echo "Cannot run or decode 'xmlrpc-c-config'"
-	exit 1
+  *)    client="client"
+        ;;
 esac
 
 case $1 in
