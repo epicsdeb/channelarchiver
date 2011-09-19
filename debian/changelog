@@ -1,3 +1,10 @@
+channelarchiver (2.9.2+dfsg-11) unstable; urgency=low
+
+  * Adjust dtd to allow empty server config
+  * Require floating point fix in xmlrpc-c
+
+ -- Michael Davidsaver <mdavidsaver@bnl.gov>  Mon, 19 Sep 2011 15:19:46 -0400
+
 channelarchiver (2.9.2+dfsg-10) unstable; urgency=low
 
   * better error handling in updateindex.sh
