@@ -1,3 +1,9 @@
+channelarchiver (2.9.2+dfsg-11.1) unstable; urgency=low
+
+  * Rebuild for EPICS 3.14.12
+
+ -- Michael Davidsaver <mdavidsaver@bnl.gov>  Fri, 26 Oct 2012 12:22:56 -0400
+
 channelarchiver (2.9.2+dfsg-11) unstable; urgency=low
 
   * Adjust dtd to allow empty server config
