@@ -30,9 +30,30 @@ Description: The EPICS data archiving engine
  .
  This package contains to user manual
 
+Package: libchannelarchiver1
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},
+Section: lib
+Description: The EPICS data archiving engine
+ The EPICS Channel Archiver
+ .
+ This package contains shared libraries used by the archiver and
+ some external tools.
+
+Package: channelarchiver-dev
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},
+         libchannelarchiver1 (= ${binary:Version}),
+Section: libdevel
+Description: The EPICS data archiving engine
+ The EPICS Channel Archiver
+ .
+ This package contains headers
+
 Package: channelarchiver-engine
 Architecture: any
 Depends: ${shlibs:Depends}, ${perl:Depends}, ${misc:Depends}, adduser,
+         libchannelarchiver1 (= ${binary:Version}),
          libxml-simple-perl, libsys-hostname-long-perl,
          libxml2-utils, sudo,
 Description: The EPICS data archiving engine
@@ -44,6 +65,7 @@ Description: The EPICS data archiving engine
 Package: channelarchiver-tools
 Architecture: any
 Depends: ${shlibs:Depends}, ${perl:Depends},
+         libchannelarchiver1 (= ${binary:Version}),
          libfrontier-rpc-perl,
 Description: The EPICS data archiving engine
  The EPICS Channel Archiver
@@ -55,6 +77,7 @@ Package: channelarchiver-dataserver
 Section: web
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
+         libchannelarchiver1 (= ${binary:Version}),
          channelarchiver-engine (= ${binary:Version}), python,
 Recommends: apache2 | httpd
 Description: The EPICS data archiving engine
@@ -66,6 +89,7 @@ Package: octave-channelarchiver
 Section: math
 Architecture: any
 Depends: ${shlibs:Depends}, ${octave:Depends},
+         libchannelarchiver1 (= ${binary:Version}),
 Description: The EPICS data archiving engine
  The EPICS Channel Archiver
  .

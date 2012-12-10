@@ -1,0 +1,5 @@
+usr/lib/libChanArchIO.so.*
+usr/lib/libDataServer.so.*
+usr/lib/libEngine.so.*
+usr/lib/libStorage.so.*
+usr/lib/libTools.so.*

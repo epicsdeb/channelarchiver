@@ -11,9 +11,13 @@ EPICS_HOST_ARCH:=$(shell /usr/lib/epics/startup/EpicsHostArch)
 
 SOV=$(shell echo "$(DEB_NOEPOCH_VERSION)"| cut -f 1 -d '-')
 
+export SHRLIB_VERSION=1
+
 OCTVER=3.2
 
-DEB_MAKE_MAKEVARS = EPICS_HOST_ARCH=$(EPICS_HOST_ARCH) USE_RPATH=NO
+DEB_MAKE_MAKEVARS = EPICS_HOST_ARCH=$(EPICS_HOST_ARCH)
+DEB_MAKE_MAKEVARS += CROSS_COMPILER_TARGET_ARCHS=$(EPICS_HOST_ARCH)-debug
+DEB_MAKE_MAKEVARS += USE_RPATH=NO SHARED_LIBRARIES=YES STATIC_BUILD=NO
 
 # Prevent CFLAGS and similar from being passed to EPICS since
 # the build system is quite fragile

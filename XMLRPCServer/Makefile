@@ -62,5 +62,9 @@ cgiinstall:
 
 test:
 	sh test.sh
+
+debug:
+	echo "ArchiveDataServer_ENDFLAGS=$(ArchiveDataServer_ENDFLAGS)"
+	echo "DataServer_LDLIBS=$(DataServer_LDLIBS)"
 	
 .PHONY: cgiinstall test
