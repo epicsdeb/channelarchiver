@@ -61,6 +61,9 @@ do
 
     name=`basename $dd`
 
+    # config present, but not data yet
+    [ -d "$BASE_DIR/$name" ] || continue
+
     # Handle current year
 
     if [ -h "$BASE_DIR/$name/current_index" ]

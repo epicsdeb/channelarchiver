@@ -43,6 +43,9 @@ do
 
     name=`basename $dd`
 
+    # config present, but not data yet
+    [ -d "$BASE_DIR/$name" ] || continue
+
     if [ -r "$BASE_DIR/$name/dataserver-key.txt" ]
     then
         # read existing ID
