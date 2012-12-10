@@ -40,6 +40,8 @@ extern TEST_CASE test_time_filter();
 // Unit TimeSlotFilterTest:
 extern TEST_CASE test_time_slot_filter();
 
+bool run_main_loop;
+
 int main(int argc, const char *argv[])
 {
     size_t units = 0, run = 0, passed = 0;

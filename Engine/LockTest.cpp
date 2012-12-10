@@ -16,6 +16,8 @@
 // a callback.
 epicsEvent hack;
 
+bool run_main_loop;
+
 class Application
 {
 public:

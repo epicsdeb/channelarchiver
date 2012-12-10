@@ -14,7 +14,7 @@ LIB_SRCS += ArchiveDataClient.cpp
 LIBRARY_HOST := DataServer
 
 # Products, but not installed (need to copy into CGI-bin)
-TESTPROD_HOST := DummyDataServer ArchiveDataServer ArchiveDataClientTest
+TESTPROD_HOST := DummyDataServer ArchiveDataClientTest
 PROD_HOST := ArchiveDataServer
 DummyDataServer_SRCS   += DummyServer.cpp
 ArchiveDataServer_SRCS += ServerConfig.cpp ArchiveDataServer.cpp main_cgi.cpp
@@ -44,6 +44,8 @@ ArchiveDataClientTest_ENDFLAGS       += $(shell ../xmlrpc-config-wrapper client-
 bench_ENDFLAGS                       += $(shell ../xmlrpc-config-wrapper client-libs)
 #LINK.cpp += $($*_ENDFLAGS)
 PROD_LDLIBS += $($*_ENDFLAGS)
+
+SHRLIB_LDLIBS += -lxmlrpc_server_cgi -lxmlrpc_server -lxmlrpc_client -lxmlrpc -lxmlrpc_util -lxmlrpc_xmlparse -lxmlrpc_xmltok -lcurl
 
 include $(TOP)/configure/RULES
 

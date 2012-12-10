@@ -73,6 +73,7 @@ Tools_DIR    = $(INSTALL_LIB)
 ToolsObj_DIR = $(INSTALL_LIB)
 
 PROD_SYS_LIBS += xerces-c
+SHRLIB_LDLIBS += -lxerces-c
 
 # UnitTest Pre-RULES:
 #
