@@ -15,6 +15,8 @@ DIRS += Manager
 
 include $(TOP)/configure/RULES_DIRS
 
+distclean: clean
+
 # What's test code?
 # I use *Test*, as well as the Ordered Mutex,
 # Guard class

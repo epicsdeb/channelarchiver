@@ -1,51 +1,35 @@
 #!/usr/bin/make -f
 
-include /usr/share/cdbs/1/rules/debhelper.mk
-include /usr/share/cdbs/1/class/makefile.mk
-include /usr/share/cdbs/1/rules/utils.mk
+export DH_VERBOSE=1
 
-# Defines MDIR and OCTDIR
-include /usr/share/octave/debian/defs.make
-
-EPICS_HOST_ARCH:=$(shell /usr/lib/epics/startup/EpicsHostArch)
-
-SOV=$(shell echo "$(DEB_NOEPOCH_VERSION)"| cut -f 1 -d '-')
+export EPICS_HOST_ARCH:=$(shell /usr/lib/epics/startup/EpicsHostArch)
 
 export SHRLIB_VERSION=1
 
 OCTVER=3.2
 
-DEB_MAKE_MAKEVARS = EPICS_HOST_ARCH=$(EPICS_HOST_ARCH)
-DEB_MAKE_MAKEVARS += CROSS_COMPILER_TARGET_ARCHS=$(EPICS_HOST_ARCH)-debug
-DEB_MAKE_MAKEVARS += USE_RPATH=NO SHARED_LIBRARIES=YES STATIC_BUILD=NO
+# Defines MDIR and OCTDIR
+include /usr/share/octave/debian/defs.make
 
-# Prevent CFLAGS and similar from being passed to EPICS since
-# the build system is quite fragile
-DEB_MAKE_INVOKE  = $(MAKE) -C $(DEB_BUILDDIR) $(DEB_MAKE_MAKEVARS)
+%:
+	dh --with epics -Sepicsmake $@
+binary: binary-arch binary-indep
+binary-arch binary-indep: install
+install: build
 
-DEB_MAKE_CLEAN_TARGET = clean
-
-DEB_INSTALL_DOCS_channelarchiver-doc += manual -XCVS -Xcvs
-
-DEB_INSTALL_DOCS_channelarchiver-engine += DataTool/make_compress_script.pl \
- Engine/ConvertEngineConfig.pl XMLRPCServer/ArchiveDataClient.pl \
- debian/engine-example.xml debian/index-example.xml debian/README.Debian
-
-DEB_INSTALL_DOCS_channelarchiver-dataserver += debian/README.Debian
-
-clean::
+override_dh_auto_clean:
+	ln -sf /usr/lib/epics/extensions/configure .
+	dh_auto_clean
 	rm -f configure
 	rm -rf bin include lib
+	rm -rf Matlab/O.$(EPICS_HOST_ARCH)
+	rm -f Matlab/*.o Matlab/ArchiveData.m
+	rm -f *.1
 
-# Add here any variable or target overrides you need.
-post-patches:: configure
+override_dh_auto_build:
+	ln -sf /usr/lib/epics/extensions/configure .
+	dh_auto_build -- SHARED_LIBRARIES=YES STATIC_BUILD=NO
 
-configure:
-	ln -s /usr/lib/epics/extensions/configure .
-
-build/octave-channelarchiver:: build-octave-stamp
-
-build-octave-stamp:
 	make -C Matlab octave HOST_ARCH=Linux EPICS_HOST_ARCH=$(EPICS_HOST_ARCH) MKOCTFILE=mkoctfile$(OCTVER)
 
 	pod2man --section=1 DataTool/ArchiveDataTool.pod > ArchiveDataTool.1
@@ -56,20 +40,21 @@ build-octave-stamp:
 	pod2man --section=1 Manager/ArchiveManager.pod > ArchiveManager.1
 	pod2man --section=1 XMLRPCServer/ArchiveDataClient.pl > ArchiveDataClient.1
 
-	touch $@
+override_dh_auto_install:
+	dh_auto_install -- SHARED_LIBRARIES=YES STATIC_BUILD=NO
 
-clean::
-	rm -rf Matlab/O.$(EPICS_HOST_ARCH)
-	rm -f Matlab/*.o
-	rm -f *.1
+	# take binaries from the top dir
+	rm -rf debian/tmp/usr/lib/epics/bin
 
-install/channelarchiver-engine::
 	install -d debian/tmp/usr/bin
 	install -m 755 -t debian/tmp/usr/bin bin/$(EPICS_HOST_ARCH)/ArchiveEngine
 	install -m 755 -t debian/tmp/usr/bin bin/$(EPICS_HOST_ARCH)/ArchiveManager
 	install -m 755 -t debian/tmp/usr/bin bin/$(EPICS_HOST_ARCH)/ArchiveIndexTool
+	install -m 755 -t debian/tmp/usr/bin bin/$(EPICS_HOST_ARCH)/ArchiveDataTool
+	install -m 755 -t debian/tmp/usr/bin bin/$(EPICS_HOST_ARCH)/ArchiveExport
 	install -m 755 ExampleSetup/ArchiveDaemon.pl debian/tmp/usr/bin/ArchiveDaemon
 	install -m 755 bin/$(EPICS_HOST_ARCH)/make_indexconfig.pl debian/tmp/usr/bin/ArchiveIndexMakeConfig
+	install -m 755 bin/$(EPICS_HOST_ARCH)/ArchiveDataClient.pl debian/tmp/usr/bin/ArchiveDataClient
 
 	install -d debian/tmp/usr/share/channelarchiver
 	install -m 755 -t debian/tmp/usr/share/channelarchiver contrib/*.sh
@@ -82,18 +67,10 @@ install/channelarchiver-engine::
 	install -d debian/tmp/etc/init.d
 	install -m 755 -t debian/tmp/etc/init.d contrib/channelarchiver
 
-install/channelarchiver-tools::
-	install -d debian/tmp/usr/bin
-	install -m 755 -t debian/tmp/usr/bin bin/$(EPICS_HOST_ARCH)/ArchiveDataTool
-	install -m 755 -t debian/tmp/usr/bin bin/$(EPICS_HOST_ARCH)/ArchiveExport
-	install -m 755 bin/$(EPICS_HOST_ARCH)/ArchiveDataClient.pl debian/tmp/usr/bin/ArchiveDataClient
-
-install/channelarchiver-dataserver::
 	install -d debian/tmp/usr/lib/cgi-bin
 	install -m 755 bin/$(EPICS_HOST_ARCH)/ArchiveDataServer \
 debian/tmp/usr/lib/cgi-bin/ArchiveDataServer.cgi
 
-install/octave-channelarchiver::
 	install -d debian/tmp$(OCTDIR)
 	install -m 644 -t debian/tmp$(OCTDIR) Matlab/O.$(EPICS_HOST_ARCH)/ArchiveData.oct
 
@@ -103,10 +80,11 @@ install/octave-channelarchiver::
 	sed -e 's|^|%|' Matlab/ArchiveData.txt > Matlab/ArchiveData.m
 	install -m 644 -t debian/tmp$(MDIR) Matlab/ArchiveData.m
 
-clean::
-	rm -f Matlab/ArchiveData.m
+override_dh_install:
+	dh_install --fail-missing
 
-common-binary-fixup-arch::
+override_dh_shlibdeps:
+	dh_shlibdeps
 	# This is an ugly hack which will go away when I figure out how to make dh_shlibdeps
 	# realize that .oct files are shared libraries.
 	dpkg-shlibdeps -Tdebian/octave-channelarchiver.substvars debian/octave-channelarchiver$(OCTDIR)/ArchiveData.oct
