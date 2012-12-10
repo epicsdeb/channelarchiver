@@ -1,11 +1,10 @@
 
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "AVLTree.h"
 #include "UnitTest.h"
 
-static int sort_compare(const int &a, const int &b)
-{   return b-a; }
 
 static int avl_last_number;
 static bool tree_is_ordered;
@@ -17,12 +16,17 @@ static void avl_order_test(const int &i, void *)
     avl_last_number = i;
 }
 
-static const char *toString(const int &i)
-{
-    static char txt[10];
-    sprintf(txt, "%d", i);
-    return txt;
-}
+template<> struct ItemOps<int> {
+	static int compare(const int &a, const int &b)
+	{   return b-a; }
+
+	static const char *tostr(const int &i)
+	{
+	    static char txt[10];
+	    sprintf(txt, "%d", i);
+	    return txt;
+	}
+};
 
 TEST_CASE avl_test()
 {

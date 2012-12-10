@@ -139,11 +139,10 @@ class RTree *ListIndex::getTree(const stdString &channel,
     return 0;
 }
 
-int sort_compare(const stdString &a,
-                 const stdString &b)
-{
-    return b.compare(a);
-}
+template<> struct ItemOps<stdString> {
+	static int compare(const stdString &a, const stdString &b)
+	{   return b.compare(a); }
+};
 
 void ListIndex::name_traverser(const stdString &name,
                                void *self)

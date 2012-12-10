@@ -15,6 +15,12 @@
 #include <GenericException.h>
 #include <AutoFilePtr.h>
 
+template<class Item>
+struct ItemOps {
+  //static int compare(const Item& a, const Item& b) {return a-b;}
+  //static const char *tostr(const Item &) {return "hi";}
+};
+
 // Tree Item:
 // Holds the full Item as well as left/right pointers
 template<class Item> class AVLItem
@@ -77,7 +83,7 @@ public:
         int comp;
         while (n)
         {
-            comp = sort_compare(item, n->item);
+            comp = ItemOps<Item>::compare(item, n->item);
             if (comp == 0)
             {
                 item = n->item;
@@ -165,7 +171,7 @@ private:
             *node = new_node;
             return true;
         }
-        int comp = sort_compare(new_node->item, (*node)->item);
+        int comp = ItemOps<Item>::compare(new_node->item, (*node)->item);
         if (comp == 0)
         {   // Don't insert new node, only update data item
             (*node)->item = new_node->item;
@@ -217,7 +223,7 @@ private:
         ++i;
         int me = i;
         fprintf(f, "n%d [ label=\"%s (%d)\" ];\n",
-                me, toString(node->item), (int)node->balance);
+                me, ItemOps<Item>::tostr(node->item), (int)node->balance);
         if (node->left)
         {
             fprintf(f, "n%d -> n%d\n", me, i+1);
