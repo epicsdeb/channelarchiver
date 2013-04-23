@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e -x
 
 function die() {
     echo "$1" >&2
@@ -34,79 +35,40 @@ cat << EOF > "$TMP"
 <serverconfig>
 EOF
 
-for dd in "$CDIR"/*
+for idx in "$BASE_DIR"/*/current_index "$BASE_DIR"/*/*/year_index
 do
-    [ -d "$dd" ] || continue
-    [ "`basename "$dd"`" = "example" ] && continue
+    DIR="$(dirname "$idx")"
 
-    [ -r "$dd/daemon.conf" ] || continue
-
-    name=`basename $dd`
-
-    # config present, but not data yet
-    [ -d "$BASE_DIR/$name" ] || continue
-
-    if [ -r "$BASE_DIR/$name/dataserver-key.txt" ]
+    if [ -r "$DIR/dataserver-key.txt" ]
     then
         # read existing ID
-        IDX=`awk '{printf "%s", $1;exit}' "$BASE_DIR/$name/dataserver-key.txt"`
+        IDX=`awk '{printf "%s", $1;exit}' "$DIR/dataserver-key.txt"`
     else
         # generate a new ID
         IDX=`hashme "$name/$y"`
-        echo "$IDX" > "$BASE_DIR/$name/dataserver-key.txt" \
-        || echo "Warning: can't to write $IDX to '$BASE_DIR/$name/dataserver-key.txt'" >&2
+        echo "$IDX" > "$DIR/dataserver-key.txt" \
+        || echo "Warning: can't to write $IDX to '$DIR/dataserver-key.txt'" >&2
     fi
 
-    if [ -f "$BASE_DIR/$name/current_index" ]; then
-        cat << EOF >> "$TMP"
+    case "$idx" in
+    */current_index) name="$(basename "$DIR")/Current" ;;
+    */year_index)
+       YEAR="$(basename "$DIR")"
+       ARCH="$(basename "$(dirname "$DIR")")"
+       name="$ARCH/$YEAR"
+       ;;
+    *) continue;;
+    esac
+
+    echo "$idx: $IDX $name"
+
+    cat << EOF >> "$TMP"
 <archive>
   <key>$IDX</key>
-  <name>$name/Current</name>
-  <path>$BASE_DIR/$name/current_index</path>
+  <name>$name</name>
+  <path>$idx</path>
 </archive>
 EOF
-
-    fi
-done
-
-
-for dd in "$CDIR"/*
-do
-    [ -d "$dd" ] || continue
-    [ "`basename "$dd"`" = "example" ] && continue
-
-    [ -r "$dd/daemon.conf" ] || continue
-
-    name=`basename $dd`
-
-    for year in "$BASE_DIR/$name/"*
-    do
-        [ -d "$year" ] || continue
-        y=`basename "$year"`
-
-        [ -f "$year/year_index" ] || continue
-
-
-        if [ -r "$year/dataserver-key.txt" ]
-        then
-            # read existing ID
-            IDX=`awk '{printf "%s", $1;exit}' "$year/dataserver-key.txt"`
-        else
-            # generate a new ID
-            IDX=`hashme "$name/$y"`
-            echo "$IDX" > "$year/dataserver-key.txt" \
-            || echo "Warning: can't to write $IDX to '$year/dataserver-key.txt'" >&2
-        fi
-
-        cat << EOF >> "$TMP"
-<archive>
-  <key>$IDX</key>
-  <name>$name/$y</name>
-  <path>$year/year_index</path>
-</archive>
-EOF
-        IDX=`expr $IDX \+ 1`
-    done
 
 done || die "Fail"
 
