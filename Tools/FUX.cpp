@@ -215,7 +215,7 @@ public:
     FUXContentHandler(FUX *fux) : fux(fux) {}
     void startElement(const XMLCh* const uri, const XMLCh* const localname,
                       const XMLCh* const qname,const Attributes& attrs);
-    void characters(const XMLCh *const chars, const unsigned int length);
+    void characters(const XMLCh *const chars, const XMLSize_t length);
     void endElement(const XMLCh* const uri, const XMLCh* const localname,
                     const XMLCh* const qname);
 private:
@@ -233,7 +233,7 @@ void FUXContentHandler::startElement(const XMLCh* const uri,
 }
 
 void FUXContentHandler::characters(const XMLCh *const chars,
-                                   const unsigned int length)
+                                   const XMLSize_t length)
 {
     char buf[500]; // TODO: Loop over chars in case length > sizeof(buf)
     int len = length;
