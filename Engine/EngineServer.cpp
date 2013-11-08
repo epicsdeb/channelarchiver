@@ -31,9 +31,9 @@ static void engineinfo(HTTPClientConnection *connection, const stdString &path,
     stdString s;
     char line[100];
 
-    page.openTable(2, "Archive Engine Info", 0);
+    page.openTable(2, "Archive Engine Info", NULL);
     page.tableLine("Version", ARCH_VERSION_TXT
-                   ", built " __DATE__ ", " __TIME__, 0);
+                   ", built " __DATE__ ", " __TIME__, NULL);
     const char *desc, *index;
     size_t num_channels, num_connected;
     epicsTime startTime, nextWrite;
@@ -58,61 +58,61 @@ static void engineinfo(HTTPClientConnection *connection, const stdString &path,
         disconn = engine->getConfig(engine_guard).getDisconnectOnDisable();
     }
         
-    page.tableLine("Description", desc, 0);
+    page.tableLine("Description", desc, NULL);
         
     epicsTime2string(startTime, s);
-    page.tableLine("Started", s.c_str(), 0);
+    page.tableLine("Started", s.c_str(), NULL);
         
-    page.tableLine("Archive Index", index, 0);
+    page.tableLine("Archive Index", index, NULL);
 
     cvtUlongToString(num_channels, line);
-    page.tableLine("Channels", line, 0);
+    page.tableLine("Channels", line, NULL);
 
     if (num_channels != num_connected)
     {
         sprintf(line,"<FONT COLOR=#FF0000>%d</FONT>",(int)num_connected);
-        page.tableLine("Connected", line, 0);
+        page.tableLine("Connected", line, NULL);
         cvtUlongToString(num_channels - num_connected, line);
-        page.tableLine("Disconnected", line, 0);
+        page.tableLine("Disconnected", line, NULL);
     }
     else
     {
         cvtUlongToString(num_connected, line);
-        page.tableLine("Connected", line, 0);
+        page.tableLine("Connected", line, NULL);
     }
         
 #ifdef SHOW_DIR
     getcwd(dir, sizeof line);                 
-    page.tableLine("Directory ", line, 0);
+    page.tableLine("Directory ", line, NULL);
 #endif
     sprintf(line, "%.3f sec", proc_dly);
-    page.tableLine("Avg. Process Delay", line, 0);
+    page.tableLine("Avg. Process Delay", line, NULL);
 
     // Idle time defined as:
     // How much of the max. delay do we get to use?
     // Assuming that the rest of the time is 'busy', non-idle time.
     sprintf(line, "%.1f %%", proc_dly/Engine::MAX_DELAY*100.0);
-    page.tableLine("Idle time", line, 0);
+    page.tableLine("Idle time", line, NULL);
 
     sprintf(line, "%lu", write_count);
-    page.tableLine("Write Count", line, 0);
+    page.tableLine("Write Count", line, NULL);
 
     sprintf(line, "%.3f sec", write_duration);
-    page.tableLine("Write Duration", line, 0);
+    page.tableLine("Write Duration", line, NULL);
 
     epicsTime2string(nextWrite, s);
-    page.tableLine("Next write time", s.c_str(), 0);
+    page.tableLine("Next write time", s.c_str(), NULL);
         
     sprintf(line, "%.1f sec", write_period);
-    page.tableLine("Write Period", line, 0);
+    page.tableLine("Write Period", line, NULL);
 
     sprintf(line, "%.1f sec", get_threshhold);
-    page.tableLine("Get Threshold", line, 0);
+    page.tableLine("Get Threshold", line, NULL);
 
     sprintf(line, "%.1f MB", (double)file_size/1024.0/1024.0);
-    page.tableLine("File Size Limit", line, 0);
+    page.tableLine("File Size Limit", line, NULL);
 
-    page.tableLine("Disconn. on disable", (disconn ? "Yes" : "No"), 0);
+    page.tableLine("Disconn. on disable", (disconn ? "Yes" : "No"), NULL);
     page.closeTable();
 }
 
@@ -245,7 +245,7 @@ static void channels(HTTPClientConnection *connection, const stdString &path,
 {
     Engine *engine = (Engine *)user_arg;
     HTMLPage page(connection->getSocket(), "Channels");
-    page.openTable(1, "Name", 1, "Status", 1, "Enabled", 0);
+    page.openTable(1, "Name", 1, "Status", 1, "Enabled", NULL);
     stdList<ArchiveChannel *>::const_iterator channel;
     stdString link;
     link.reserve(80);
@@ -267,7 +267,7 @@ static void channels(HTTPClientConnection *connection, const stdString &path,
                        ((*channel)->isDisabled(guard) ?
                         "<FONT COLOR=#FFFF00>disabled</FONT>" :
                         "enabled"),
-                       0);
+                       NULL);
     }
     page.closeTable();
 }
@@ -279,7 +279,7 @@ static void channelInfoTable(HTMLPage &page)
                    1, "Mechanism",
                    1, "Disabling",
                    1, "State",
-                   0);
+                   NULL);
 }
 
 static void channelInfoLine(HTMLPage &page, ArchiveChannel *channel)
@@ -319,7 +319,7 @@ static void channelInfoLine(HTMLPage &page, ArchiveChannel *channel)
         (channel->isDisabled(guard) ?
          "<FONT COLOR=#FFFF00>disabled</FONT>" :
          "enabled"),
-        0);
+        NULL);
 }
 
 static void channelInfo(HTTPClientConnection *connection,
@@ -363,7 +363,7 @@ void groups(HTTPClientConnection *connection, const stdString &path,
         stdString name;
         name.reserve(80);
         page.openTable(1, "Name", 1, "Enabled", 1, "Channels",
-                       1, "Connected", 0);
+                       1, "Connected", NULL);
         for (group=groups.begin(); group!=groups.end(); ++group)
         {
             name = "<A HREF=\"group/";
@@ -389,7 +389,7 @@ void groups(HTTPClientConnection *connection, const stdString &path,
             page.tableLine(name.c_str(),
                             (enabled ?
                              "Yes" : "<FONT COLOR=#FFFF00>No</FONT>"),
-                            channels, connected, 0);
+                            channels, connected, NULL);
         }
     } 
     // Engine Unlocked   
@@ -399,7 +399,7 @@ void groups(HTTPClientConnection *connection, const stdString &path,
                 (unsigned int)total_connect_count);
     else
         cvtUlongToString((unsigned long) total_connect_count, connected);
-    page.tableLine("Total", " ", channels, connected, 0);
+    page.tableLine("Total", " ", channels, connected, NULL);
     page.closeTable();
 }
 
@@ -421,8 +421,8 @@ static void groupInfo(HTTPClientConnection *connection, const stdString &path,
             page.line(group_name);
             return;
         }
-        page.openTable(2, "Group", 0);
-        page.tableLine("Name", group_name.c_str(), 0);
+        page.openTable(2, "Group", NULL);
+        page.tableLine("Name", group_name.c_str(), NULL);
         page.closeTable();
         if (engine->getChannels(engine_guard).empty())
         {
@@ -632,7 +632,7 @@ static void channelGroups(HTTPClientConnection *connection,
         
         Guard guard(__FILE__, __LINE__, *channel);
         page.out("<H2>Group membership</H2>");
-        page.openTable(1, "Group", 1, "Enabled", 0);
+        page.openTable(1, "Group", 1, "Enabled", NULL);
         stdList<GroupInfo *>::const_iterator group;
         stdString link;
         link.reserve(80);
@@ -650,7 +650,7 @@ static void channelGroups(HTTPClientConnection *connection,
                 Guard group_guard(__FILE__, __LINE__, **group);
                 page.tableLine(link.c_str(),
                                ((*group)->isEnabled(group_guard) ?
-                                "Yes" : "<FONT COLOR=#FF0000>No</FONT>"), 0);
+                                "Yes" : "<FONT COLOR=#FF0000>No</FONT>"), NULL);
             }
         }
         page.closeTable();
