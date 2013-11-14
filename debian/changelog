@@ -1,3 +1,21 @@
+channelarchiver (2.9.2+dfsg-16~bpo60~2013B+2) squeeze-2013B; urgency=low
+
+  * Revert commit 630ba3cb25f2adff0b78518bcf9f57adf6773203 except for the changelog 
+
+ -- Leon Flaks <flaks@bnl.gov>  Thu, 14 Nov 2013 14:47:26 -0500
+
+channelarchiver (2.9.2+dfsg-16~bpo60~2013B+1) squeeze-2013B; urgency=low
+
+  * Backport to squeeze-2013B
+
+ -- Leon Flaks <flaks@bnl.gov>  Fri, 08 Nov 2013 14:57:43 -0500
+
+channelarchiver (2.9.2+dfsg-16~2013B+1) wheezy-2013B; urgency=low
+
+  * Backport to wheezy-2013B
+
+ -- Leon Flaks <flaks@bnl.gov>  Fri, 08 Nov 2013 14:46:13 -0500
+
 channelarchiver (2.9.2+dfsg-16) unstable; urgency=low
 
   [ Larry Hoff ]
