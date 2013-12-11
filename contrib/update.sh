@@ -5,7 +5,7 @@ if [ "`whoami`" != channelarchiver ]; then
     exit $?
 fi
 
-/usr/share/channelarchiver/updateindex.sh
+/usr/share/channelarchiver/updateindex.sh "$1"
 
 if [ -x /usr/share/channelarchiver/genserver.sh ]
 then
