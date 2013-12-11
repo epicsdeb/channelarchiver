@@ -9,6 +9,10 @@ function warn() {
     echo "$1" >&2
 }
 
+# Update only engine storing data in this directory
+# "" to update all
+DOONLY="$1"
+
 CONF=/etc/channelarchiver/daemon.conf
 CDIR="$(dirname "$CONF")"
 
@@ -63,6 +67,9 @@ do
 
     # config present, but not data yet
     [ -d "$BASE_DIR/$name" ] || continue
+
+    # If only a specific config needs to be updated, then skip all others
+    [ -n "$DOONLY" -a "$DOONLY" != "$BASE_DIR/$name" ] && continue
 
     # Handle current year
 

@@ -59,7 +59,7 @@ do
       <config>$CONF</config>
       <restart>
         <period type='$RESTART_MODE'>$RESTART_TIME</period>
-        <action>/usr/share/channelarchiver/update.sh</action>
+        <action>/usr/share/channelarchiver/update.sh "$DIR"</action>
       </restart>
       <dataserver><host>$DATA_SERVER</host></dataserver>
    </engine>
