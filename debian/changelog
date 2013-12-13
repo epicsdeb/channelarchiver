@@ -1,3 +1,16 @@
+channelarchiver (2.9.2+dfsg-17~bpo60~2012A+1) squeeze-2012A; urgency=low
+
+  * Backport to debian squeeze 2012A
+
+ -- Leon Flaks <flaks@bnl.gov>  Fri, 13 Dec 2013 13:24:00 -0500
+
+channelarchiver (2.9.2+dfsg-17~bpo60~2013B+1) squeeze-2013B; urgency=low
+
+  [ Michael Davidsaver ]
+  * Avoid O(N^2) re-indexing
+
+ -- Leon Flaks <flaks@bnl.gov>  Fri, 13 Dec 2013 13:15:16 -0500
+
 channelarchiver (2.9.2+dfsg-16~bpo60~2013B+2) squeeze-2013B; urgency=low
 
   * Revert commit 630ba3cb25f2adff0b78518bcf9f57adf6773203 except for the changelog 
