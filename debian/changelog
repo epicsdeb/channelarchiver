@@ -1,3 +1,10 @@
+channelarchiver (2.9.2+dfsg-17) unstable; urgency=low
+
+  [ Patch from Michael Davidsaver ]
+  * Avoid O(N^2) re-indexing
+
+ -- Leon Flaks <flaks@bnl.gov>  Fri, 13 Dec 2013 10:18:04 -0500
+
 channelarchiver (2.9.2+dfsg-16) unstable; urgency=low
 
   [ Larry Hoff ]
