@@ -43,12 +43,15 @@ function create_xml() {
         then
             mv "$out.tmp" "$out"
         else
-            die "Generated invalid index config $out"
+            warn "Generated invalid index config $out"
+            return 1
         fi
     else
         rm "$out.tmp"
-        die "Failed to generate index config $out"
+        warn "Failed to generate index config $out"
+        return 1
     fi
+    return 0
 }
 
 [ -n "$BASE_DIR" ] || die "Config does not specify BASE_DIR ($BASE_DIR)"
@@ -88,14 +91,11 @@ do
        -not -samefile "$exclude" | \
        create_xml "$BASE_DIR/$name/$YYYY/year_index.xml" -
     then
-        echo -n
+        ArchiveIndexTool year_index.xml year_index \
+        || warn "Failed to create archive $BASE_DIR/$name/$YYYY/year_index" && continue
     else
         echo "Failed to create year index config for $name" >&2
-        continue
     fi
-
-    ArchiveIndexTool year_index.xml year_index \
-    || warn "Failed to create archive $BASE_DIR/$name/$YYYY/year_index" && continue
 
     popd >/dev/null
 
