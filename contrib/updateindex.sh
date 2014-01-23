@@ -92,7 +92,7 @@ do
        create_xml "$BASE_DIR/$name/$YYYY/year_index.xml" -
     then
         ArchiveIndexTool year_index.xml year_index \
-        || warn "Failed to create archive $BASE_DIR/$name/$YYYY/year_index" && continue
+        || warn "Failed to create archive $BASE_DIR/$name/$YYYY/year_index"
     else
         echo "Failed to create year index config for $name" >&2
     fi
