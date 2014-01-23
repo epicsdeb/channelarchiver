@@ -1,3 +1,13 @@
+channelarchiver (2.9.2+dfsg-18) unstable; urgency=low
+
+  * Fix updateindex.sh script to avoid problems with the last and first weeks
+    of the new year.
+
+  [ Larry Hoff ]
+  * fix XML callback arguments for both libxerces 2.X and 3.X
+
+ -- Michael Davidsaver <mdavidsaver@bnl.gov>  Thu, 23 Jan 2014 18:42:12 -0500
+
 channelarchiver (2.9.2+dfsg-17) unstable; urgency=low
 
   [ Patch from Michael Davidsaver ]
