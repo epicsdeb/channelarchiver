@@ -167,10 +167,11 @@ void ProcessVariable::start(Guard &guard)
             ctx.requestFlush(ctx_guard);
         }
     }
-    id = _id;
     if (status != ECA_NORMAL)
         LOG_MSG("'%s': ca_create_channel failed, status %s\n",
                 getName().c_str(), ca_message(status));
+    else
+        id = _id;
 }
 
 bool ProcessVariable::isRunning(Guard &guard)
