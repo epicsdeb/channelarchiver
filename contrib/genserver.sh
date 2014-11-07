@@ -45,7 +45,11 @@ do
         IDX=`awk '{printf "%s", $1;exit}' "$DIR/dataserver-key.txt"`
     else
         # generate a new ID
-        IDX=`hashme "$name/$y"`
+        case "$idx" in
+        */current_index) IDX=`hashme "$name"`;;
+        */year_index)    IDX=`hashme "$name/$y"`;;
+        *)               IDX=invalid ;;
+        esac
         echo "$IDX" > "$DIR/dataserver-key.txt" \
         || echo "Warning: can't to write $IDX to '$DIR/dataserver-key.txt'" >&2
     fi
