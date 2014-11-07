@@ -142,7 +142,7 @@ void ProcessVariable::start(Guard &guard)
     LOG_ASSERT(state == INIT);
     state = DISCONNECTED;
     // Unlock around CA lib. calls to prevent deadlocks in callbacks.
-    int status;
+    int status = ECA_INTERNAL;
     chid _id;
     {
         GuardRelease release(__FILE__, __LINE__, guard);
@@ -269,7 +269,7 @@ void ProcessVariable::subscribe(Guard &guard)
         // to be on the safe side, we keep the guard and prevent a stop(),
         // until we find a deadlock that forces us to reconsider....
         {
-            int status;
+            int status = ECA_INTERNAL;
             try
             {
                 status = ca_create_subscription(_type, _count, _id,
