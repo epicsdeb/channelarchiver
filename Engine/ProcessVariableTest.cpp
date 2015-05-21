@@ -21,6 +21,7 @@ public:
     
     PVTestPVListener(int num) : num(num), connected(false), values(0)
     {}
+    virtual ~PVTestPVListener() {}
     
     void pvConnected(ProcessVariable &pv, const epicsTime &when)
     {

@@ -12,8 +12,8 @@ ArchiveIndexTool [Options] <archive list file/old index> <output index>
 =head1 DESCRIPTION
 
 The ArchiveIndexTool is used to create Master Indices by combining multiple
-indices into a new one.  The archive list ﬁle lists all the sub archives,
-that is the paths to each sub-archive’s index ﬁle.
+indices into a new one.  The archive list file lists all the sub archives,
+that is the paths to each sub-archive's index file.
 
 Use L<ArchiveIndexMakeConfig(1)> to generate the archive list file.
 

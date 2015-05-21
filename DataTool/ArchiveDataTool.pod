@@ -11,8 +11,8 @@ ArchiveDataTool [Options] <index-file>
 
 =head1 DESCRIPTION
 
-The ArchiveDataTool allows investigation of data ﬁles as well as conversion
-from old directory-ﬁle based archives into ones that utilize an index ﬁle. It also
+The ArchiveDataTool allows investigation of data files as well as conversion
+from old directory-file based archives into ones that utilize an index file. It also
 allows some basic data management.
 
 =head1 OPTIONS

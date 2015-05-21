@@ -209,7 +209,7 @@ InputSource *FUXEntityResolver::resolveEntity(const XMLCh *const publicId,
 }
 #endif
 
-#if (XERCES_VERSION_MAJOR !=2)
+#if (XERCES_VERSION_MAJOR !=3)
 #error "incompatible xerces version"
 #endif
 
@@ -223,11 +223,7 @@ public:
     FUXContentHandler(FUX *fux) : fux(fux) {}
     void startElement(const XMLCh* const uri, const XMLCh* const localname,
                       const XMLCh* const qname,const Attributes& attrs);
-#if (XERCES_VERSION_MAJOR >=3)
     void characters(const XMLCh *const chars, const XMLSize_t length);
-#else
-    void characters(const XMLCh *const chars, const unsigned int length);
-#endif
 
     void endElement(const XMLCh* const uri, const XMLCh* const localname,
                     const XMLCh* const qname);
@@ -246,11 +242,7 @@ void FUXContentHandler::startElement(const XMLCh* const uri,
 }
 
 void FUXContentHandler::characters(const XMLCh *const chars,
-#if (XERCES_VERSION_MAJOR >=3)
                                    const XMLSize_t length)
-#else
-                                   const unsigned int length)
-#endif
 {
     char buf[500]; // TODO: Loop over chars in case length > sizeof(buf)
     int len = length;
