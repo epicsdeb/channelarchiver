@@ -1,3 +1,9 @@
+channelarchiver (2.9.2+dfsg-20) unstable; urgency=low
+
+  * Fixes for debian 8
+
+ -- Michael Davidsaver <mdavidsaver@bnl.gov>  Thu, 21 May 2015 11:29:15 -0400
+
 channelarchiver (2.9.2+dfsg-19) unstable; urgency=low
 
   * failed_ca_create_channel leads to dangling pointer
