@@ -1,3 +1,9 @@
+channelarchiver (2.9.2+dfsg-21) UNRELEASED; urgency=medium
+
+  * Fix build problems with recent gcc and Base >=3.15
+
+ -- Michael Davidsaver <mdavidsaver@gmail.com>  Mon, 18 Dec 2017 19:03:13 -0600
+
 channelarchiver (2.9.2+dfsg-20) unstable; urgency=low
 
   * Fixes for debian 8
