@@ -145,7 +145,7 @@ static void stop(HTTPClientConnection *connection, const stdString &path,
         line = "Shutdown initiated via HTTP from ";
         line += peer;
         line += "\n";
-        LOG_MSG(line.c_str());
+        LOG_MSG("%s", line.c_str());
 #ifdef USE_PASSWD
         CGIDemangler args;
         args.parse(path.substr(6).c_str());

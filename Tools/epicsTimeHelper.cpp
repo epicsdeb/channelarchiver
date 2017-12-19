@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <math.h>
 #include "epicsTimeHelper.h"
-#include "tsDefs.h"
 #include "MsgLogger.h"
 
 // Because of unknown differences in the epoch definition,

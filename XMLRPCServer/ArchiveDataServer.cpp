@@ -733,7 +733,7 @@ xmlrpc_value *get_names(xmlrpc_env *env, xmlrpc_value *args, void *user)
     catch (GenericException &e)
     {
         xmlrpc_env_set_fault_formatted(env, ARCH_DAT_SERV_FAULT,
-                                       (char *) e.what());
+                                       "%s", e.what());
         return 0;
     }
     return result.release();

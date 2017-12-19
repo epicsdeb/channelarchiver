@@ -14,13 +14,6 @@
 #include "epicsTimeHelper.h"
 #include <epicsMath.h> // math.h + isinf + isnan
 
-// Under RH9, isfinite is defined as a macro
-#undef isfinite
-static int isfinite(double value)
-{
-    return !(isinf(value) ||  isnan(value));
-}
-
 const char *GNUPlotExporter::imageExtension()
 {   return ".png"; }
 

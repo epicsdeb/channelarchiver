@@ -12,6 +12,8 @@
 #include "Engine.h"
 #include "EngineLocks.h"
 
+const double Engine::MAX_DELAY = 0.5;
+
 Engine::Engine(const stdString &index_name)
     : mutex("Engine", EngineLocks::Engine),
       is_running(false),

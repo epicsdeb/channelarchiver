@@ -14,7 +14,7 @@ typedef enum
 
 static CA_State state = not_connected;
 static evid event_id;
-static size_t num_monitors = 0;
+static long num_monitors = 0;
 
 static void event_cb(struct event_handler_args args)
 {
