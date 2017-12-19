@@ -29,10 +29,11 @@ FLAGS += -I../include
 # EPICS Base
 FLAGS += -I$(EPICS_BASE)/include
 FLAGS += -I$(EPICS_BASE)/include/os/$(HOST_ARCH)
+FLAGS += -I$(EPICS_BASE)/include/compiler/gcc
 # Libraries ------------------------------------------
 FLAGS += -L../lib/$(EPICS_HOST_ARCH) -lDataServer -lStorage -lTools 
 # EPICS Base
-FLAGS += -L$(EPICS_BASE)/lib/$(EPICS_HOST_ARCH) -ldbStaticHost -lCom -lca
+FLAGS += -L$(EPICS_BASE)/lib/$(EPICS_HOST_ARCH) -lCom -lca
 # XML-RPC library
 # TODO: This is not portable to Win32
 FLAGS += `xmlrpc-c-config client --ldadd`
